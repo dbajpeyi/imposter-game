@@ -2,465 +2,455 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Imposter — Pass the Phone</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Imposter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#12141c;
-    --ink-2:#1a1d29;
-    --ink-3:#232838;
-    --line:#333a52;
-    --paper:#ece7da;
-    --muted:#8b91a6;
-    --gold:#e0a93b;
-    --gold-deep:#a87a1f;
-    --crimson:#e0564e;
-    --crimson-deep:#a02f2a;
-    --redact:#0c0d12;
+    --bg:#000000;
+    --surface:#0e0e0e;
+    --surface2:#161616;
+    --line:#262626;
+    --text:#f5f5f5;
+    --muted:#8c8c8c;
+    --yellow:#FCC723;
+    --red:#e5443b;
+    --radius:16px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
   body{
-    background:
-      radial-gradient(120% 80% at 50% -10%, #1d2233 0%, var(--ink) 60%) fixed,
-      var(--ink);
-    color:var(--paper);
-    font-family:"Inter",system-ui,sans-serif;
-    min-height:100vh;
-    line-height:1.5;
-  }
-  /* faint grid, like a file folder */
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;
-    background-image:linear-gradient(var(--paper) 1px,transparent 1px),
-                     linear-gradient(90deg,var(--paper) 1px,transparent 1px);
-    background-size:26px 26px;
+    font-family:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    min-height:100vh;min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
   }
   #app{
-    position:relative;
-    max-width:460px;margin:0 auto;
-    min-height:100vh;
-    padding:26px 20px 40px;
+    max-width:520px;margin:0 auto;
+    min-height:100vh;min-height:100dvh;
+    padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));
     display:flex;flex-direction:column;
   }
+  .screen{flex:1;display:flex;flex-direction:column;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none}.card{transition:none!important}}
 
-  .eyebrow{
-    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.28em;
-    text-transform:uppercase;color:var(--muted);margin:0;
-  }
-  .display{font-family:"Anton",sans-serif;font-weight:400;letter-spacing:.02em;line-height:.96;}
-  .hr{height:1px;background:var(--line);border:0;margin:0;}
+  .brand{font-weight:700;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--yellow);text-align:center;}
+  .title{font-weight:700;font-size:clamp(40px,13vw,60px);line-height:.95;letter-spacing:-.02em;text-align:center;margin:6px 0 0;}
+  .title .dot{color:var(--yellow);}
+  .sub{text-align:center;color:var(--muted);font-size:14px;margin-top:10px;}
 
-  /* ---------- masthead ---------- */
-  .masthead{margin-bottom:22px;}
-  .masthead .tag{
-    display:flex;justify-content:space-between;align-items:flex-end;
-    border-bottom:1px solid var(--line);padding-bottom:8px;
-  }
-  .masthead h1{
-    font-family:"Anton",sans-serif;font-size:54px;margin:6px 0 0;
-    text-transform:uppercase;letter-spacing:.04em;
-  }
-  .masthead h1 .o{color:var(--crimson);}
-  .stamp-file{
-    font-family:"Space Mono",monospace;font-size:11px;color:var(--gold);
-    border:1px solid var(--gold-deep);border-radius:3px;padding:3px 7px;letter-spacing:.12em;
-  }
+  .stack{display:flex;flex-direction:column;gap:14px;}
+  .grow{flex:1;}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 
-  /* ---------- generic blocks ---------- */
-  .panel{
-    background:var(--ink-2);border:1px solid var(--line);border-radius:10px;
-    padding:16px;margin-bottom:14px;
-  }
-  .panel > .label{margin-bottom:12px;}
-  label.label{display:block;}
+  label.fld{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 8px 2px;font-weight:600;}
 
-  .name-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .name-row:last-child{margin-bottom:0;}
-  .name-num{
-    font-family:"Space Mono",monospace;font-size:11px;color:var(--muted);
-    width:34px;flex:none;letter-spacing:.1em;
-  }
-  input[type=text]{
-    flex:1;width:100%;background:var(--ink-3);border:1px solid var(--line);
-    color:var(--paper);font-family:"Inter",sans-serif;font-size:16px;font-weight:500;
-    padding:11px 12px;border-radius:7px;outline:none;
-  }
-  input[type=text]:focus-visible{border-color:var(--gold);box-shadow:0 0 0 2px rgba(224,169,59,.25);}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
 
-  .seg{display:flex;gap:8px;}
-  .seg button{
-    flex:1;background:var(--ink-3);border:1px solid var(--line);color:var(--paper);
-    font-family:"Space Mono",monospace;font-weight:700;font-size:17px;
-    padding:13px 0;border-radius:7px;cursor:pointer;transition:.15s;
-  }
-  .seg button .sub{display:block;font-size:9px;font-weight:400;letter-spacing:.14em;color:var(--muted);margin-top:3px;}
-  .seg button[aria-pressed=true]{background:var(--gold);color:var(--ink);border-color:var(--gold);}
-  .seg button[aria-pressed=true] .sub{color:rgba(18,20,28,.7);}
-  .seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  .stepper{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:8px;}
+  .stepper .val{font-weight:700;font-size:22px;min-width:40px;text-align:center;}
+  .round-btn{width:46px;height:46px;border-radius:12px;border:none;background:var(--surface2);color:var(--text);font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .round-btn:active{background:#222;}
+  .round-btn:disabled{opacity:.3;}
 
-  select{
-    width:100%;background:var(--ink-3);border:1px solid var(--line);color:var(--paper);
-    font-family:"Inter",sans-serif;font-size:16px;font-weight:500;padding:12px;border-radius:7px;
-    outline:none;appearance:none;
-    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
-    background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;
-    background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  .names{display:flex;flex-direction:column;gap:8px;}
+  .name-row{display:flex;align-items:center;gap:10px;}
+  .name-row .idx{width:22px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;flex:none;}
+  input.name{
+    flex:1;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;color:var(--text);font-size:16px;font-family:inherit;outline:none;
   }
-  select:focus-visible{border-color:var(--gold);box-shadow:0 0 0 2px rgba(224,169,59,.25);}
+  input.name:focus{border-color:var(--yellow);}
+
+  select.sel{
+    width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:15px 14px;color:var(--text);font-size:16px;font-family:inherit;outline:none;
+    -webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23FCC723' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 16px center;
+  }
+  select.sel:focus{border-color:var(--yellow);}
+
+  .seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;}
+  .seg button{flex:1;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;padding:11px 6px;border-radius:10px;cursor:pointer;}
+  .seg button.on{background:var(--yellow);color:#000;}
+
+  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .setting{padding:15px 0;border-bottom:1px solid var(--line);}
+  .setting:last-child{border-bottom:none;}
+  .setting .lbl{font-weight:600;font-size:15px;}
+  .setting .hint{color:var(--muted);font-size:12.5px;margin-top:3px;max-width:55%;}
 
   .btn{
-    width:100%;border:0;border-radius:9px;cursor:pointer;
-    font-family:"Anton",sans-serif;font-size:21px;letter-spacing:.06em;text-transform:uppercase;
-    padding:16px;transition:.15s;
+    width:100%;border:none;border-radius:var(--radius);padding:17px;font-family:inherit;
+    font-size:17px;font-weight:700;cursor:pointer;letter-spacing:.01em;
   }
-  .btn-gold{background:var(--gold);color:var(--ink);}
-  .btn-gold:hover{filter:brightness(1.06);}
-  .btn-ghost{
-    background:transparent;color:var(--paper);border:1px solid var(--line);
-    font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.12em;font-weight:700;padding:14px;
-  }
-  .btn-ghost:hover{border-color:var(--paper);}
-  .btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+  .btn-primary{background:var(--yellow);color:#000;}
+  .btn-primary:active{filter:brightness(.92);}
+  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
+  .btn-ghost:active{background:var(--surface);}
   .btn-row{display:flex;gap:10px;}
-  .btn-row .btn{font-size:13px;}
+  .btn-row .btn{flex:1;}
+  .link{background:none;border:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:10px;text-decoration:underline;text-underline-offset:3px;}
 
-  .note{font-size:13px;color:var(--muted);margin:8px 2px 0;}
-  .error{color:var(--crimson);font-family:"Space Mono",monospace;font-size:12px;margin-top:10px;min-height:14px;}
-
-  .spacer{flex:1;}
-
-  /* ---------- handoff ---------- */
-  .handoff-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
-  .counter{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.18em;color:var(--muted);}
-  .progress{display:flex;gap:6px;}
-  .pip{width:22px;height:4px;border-radius:2px;background:var(--line);}
-  .pip.done{background:var(--gold);}
-  .pip.active{background:var(--paper);}
-
-  .passto{text-align:center;margin:8px 0 4px;}
-  .passto .eyebrow{margin-bottom:10px;}
-  .passto .who{font-family:"Anton",sans-serif;font-size:42px;text-transform:uppercase;line-height:1;word-break:break-word;}
-
-  /* ---------- the card / signature ---------- */
+  /* ----- reveal ----- */
+  .reveal{flex:1;display:flex;flex-direction:column;}
+  .reveal-top{height:48px;display:flex;align-items:center;justify-content:center;}
+  .cat-label{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--yellow);font-weight:700;text-align:center;}
+  .card-wrap{flex:1;perspective:1400px;display:flex;}
   .card{
-    perspective:1400px;margin:22px 0;cursor:pointer;
+    position:relative;flex:1;border-radius:24px;cursor:pointer;
+    transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1);
   }
-  .card-inner{
-    position:relative;width:100%;min-height:380px;
-    transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1);
-  }
-  .card.flipped .card-inner{transform:rotateY(180deg);}
+  .card.flipped{transform:rotateY(180deg);}
   .face{
     position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    border-radius:14px;padding:24px;display:flex;flex-direction:column;
-    border:1px solid var(--line);overflow:hidden;
+    border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;text-align:center;
   }
-  /* front: sealed */
-  .face-front{
-    background:repeating-linear-gradient(135deg,var(--ink-2) 0 12px,var(--ink-3) 12px 24px);
-    align-items:center;justify-content:center;text-align:center;gap:18px;
+  .face-front{background:var(--surface);border:1px solid var(--line);}
+  .face-front .who{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .face-front .pname{font-weight:700;font-size:clamp(30px,9vw,42px);margin:8px 0 26px;line-height:1;}
+  .tap-pill{border:2px solid var(--yellow);color:var(--yellow);border-radius:999px;padding:13px 26px;font-weight:700;font-size:15px;letter-spacing:.04em;}
+  .face-back{background:var(--surface2);border:1px solid var(--line);transform:rotateY(180deg);}
+  .face-back.imp{border-color:var(--red);}
+  .card-cat{
+    font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);
+    font-weight:700;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line);
+    max-width:80%;
   }
-  .seal{
-    width:96px;height:96px;border-radius:50%;
-    border:2px dashed var(--gold-deep);display:flex;align-items:center;justify-content:center;
-    color:var(--gold);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.12em;
-    text-align:center;line-height:1.3;
-  }
-  .face-front .lead{font-family:"Anton",sans-serif;font-size:26px;text-transform:uppercase;letter-spacing:.05em;}
-  .classified{
-    position:absolute;top:14px;left:14px;font-family:"Space Mono",monospace;font-size:10px;
-    letter-spacing:.2em;color:var(--crimson);border:1px solid var(--crimson-deep);padding:2px 6px;border-radius:3px;
-  }
-  .tap-hint{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);}
+  .face-back.imp .card-cat{border-bottom-color:rgba(229,68,59,.35);}
+  .word{font-weight:700;font-size:clamp(34px,11vw,58px);line-height:1.02;letter-spacing:-.01em;word-break:break-word;}
+  .imp-tag{font-weight:700;font-size:clamp(36px,12vw,60px);color:var(--red);letter-spacing:.02em;line-height:1;}
+  .clue{margin-top:18px;}
+  .clue .clue-k{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .clue .clue-v{font-weight:700;font-size:clamp(26px,8vw,38px);margin-top:4px;word-break:break-word;}
 
-  /* back: role */
-  .face-back{transform:rotateY(180deg);justify-content:center;text-align:center;gap:14px;}
-  .face-back.crew{background:linear-gradient(160deg,#241f10,#1a1d29);border-color:var(--gold-deep);}
-  .face-back.imp{background:linear-gradient(160deg,#2a1413,#1a1d29);border-color:var(--crimson-deep);}
-  .role-tag{
-    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-    align-self:center;padding:4px 10px;border-radius:4px;
-  }
-  .crew .role-tag{color:var(--ink);background:var(--gold);}
-  .imp .role-tag{color:var(--paper);background:var(--crimson-deep);}
-  .role-headline{font-family:"Anton",sans-serif;font-size:24px;text-transform:uppercase;letter-spacing:.04em;}
-  .imp .role-headline{color:var(--crimson);}
-  .crew .word{
-    font-family:"Anton",sans-serif;font-size:46px;line-height:1;color:var(--gold);
-    text-transform:uppercase;word-break:break-word;margin:4px 0;
-  }
-  .crew .cat-line,.imp .cat-line{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;}
-  .hint-block{margin:6px auto 0;max-width:300px;}
-  .hint-label{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.22em;color:var(--muted);margin-bottom:8px;}
-  .redactions{display:flex;flex-direction:column;gap:7px;align-items:center;margin-bottom:12px;}
-  .redactions span{height:11px;border-radius:2px;background:var(--redact);}
-  .redactions span:nth-child(1){width:70%;}
-  .redactions span:nth-child(2){width:90%;}
-  .redactions span:nth-child(3){width:55%;}
-  .hint-text{font-family:"Inter",sans-serif;font-size:24px;font-weight:600;color:var(--paper);}
-  .role-foot{font-size:13px;color:var(--muted);max-width:300px;margin:2px auto 0;}
+  /* ----- started / roster ----- */
+  .starter-box{text-align:center;padding:8px 0 4px;}
+  .starter-k{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .starter-v{font-weight:700;font-size:clamp(36px,12vw,56px);color:var(--yellow);line-height:1.02;margin-top:6px;word-break:break-word;}
 
-  /* ---------- discuss ---------- */
-  .discuss-head{text-align:center;margin-bottom:6px;}
-  .discuss-head .display{font-size:40px;text-transform:uppercase;}
-  .instructions{margin:0 0 14px;font-size:14px;color:var(--muted);text-align:center;}
+  .roster{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:6px;}
+  .chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 16px;font-weight:600;font-size:15px;color:var(--text);cursor:pointer;}
+  .chip:active{border-color:var(--yellow);}
 
-  .reveal-box{
-    margin-top:6px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center;
-  }
-  .reveal-box .word{font-family:"Anton",sans-serif;font-size:36px;color:var(--gold);text-transform:uppercase;line-height:1;margin:4px 0;}
-  .reveal-box .imps{font-family:"Space Mono",monospace;font-size:13px;color:var(--crimson);margin-top:8px;letter-spacing:.06em;}
+  .answer-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-align:center;}
+  .answer-box .ak{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .answer-box .aw{font-weight:700;font-size:clamp(26px,8vw,36px);margin-top:4px;}
+  .answer-box .imps{margin-top:12px;color:var(--red);font-weight:600;font-size:15px;}
 
-  @media (prefers-reduced-motion:reduce){
-    .card-inner{transition:none;}
-  }
-  @media (max-width:380px){
-    .masthead h1{font-size:46px;}
-    .crew .word{font-size:38px;}
-    .passto .who{font-size:34px;}
-  }
+  .hide-on-share{}
 </style>
 </head>
 <body>
-<div id="app" aria-live="polite"></div>
-
+<div id="app"></div>
 <script>
-const CATEGORIES = {"Movies": [{"w": "Titanic", "h": "ocean"}, {"w": "Avatar", "h": "blue"}, {"w": "Jaws", "h": "fin"}, {"w": "Frozen", "h": "snow"}, {"w": "Up", "h": "balloon"}, {"w": "Shrek", "h": "swamp"}, {"w": "Joker", "h": "laugh"}, {"w": "Gladiator", "h": "arena"}, {"w": "Inception", "h": "dream"}, {"w": "Rocky", "h": "gloves"}, {"w": "Cars", "h": "race"}, {"w": "Coco", "h": "guitar"}, {"w": "Alien", "h": "egg"}, {"w": "Grease", "h": "leather"}, {"w": "Casablanca", "h": "piano"}, {"w": "Psycho", "h": "shower"}, {"w": "Brave", "h": "bow"}, {"w": "Dumbo", "h": "ears"}, {"w": "Moana", "h": "wave"}, {"w": "Aladdin", "h": "wish"}, {"w": "Bambi", "h": "forest"}, {"w": "Tangled", "h": "hair"}, {"w": "Hercules", "h": "muscle"}, {"w": "Goodfellas", "h": "mob"}, {"w": "Memento", "h": "tattoo"}, {"w": "Twister", "h": "wind"}, {"w": "Speed", "h": "bus"}, {"w": "Saw", "h": "trap"}, {"w": "Halloween", "h": "mask"}, {"w": "Ratatouille", "h": "kitchen"}, {"w": "WALL-E", "h": "trash"}, {"w": "Avengers", "h": "team"}, {"w": "The Matrix", "h": "code"}, {"w": "Frankenstein", "h": "stitches"}, {"w": "Dracula", "h": "fangs"}, {"w": "Tarzan", "h": "vine"}, {"w": "Mulan", "h": "sword"}, {"w": "Pinocchio", "h": "nose"}, {"w": "Cinderella", "h": "midnight"}, {"w": "Pocahontas", "h": "river"}, {"w": "Spotlight", "h": "newspaper"}, {"w": "Whiplash", "h": "drum"}, {"w": "Birdman", "h": "stage"}, {"w": "Argo", "h": "escape"}, {"w": "Chicago", "h": "jazz"}, {"w": "Amadeus", "h": "symphony"}, {"w": "Braveheart", "h": "kilt"}, {"w": "Interstellar", "h": "wormhole"}, {"w": "Parasite", "h": "basement"}, {"w": "Toy Story", "h": "playroom"}], "Fast Food": [{"w": "Cheeseburger", "h": "grill"}, {"w": "French Fries", "h": "salt"}, {"w": "Pizza", "h": "delivery"}, {"w": "Hot Dog", "h": "mustard"}, {"w": "Chicken Nuggets", "h": "dip"}, {"w": "Taco", "h": "crunch"}, {"w": "Burrito", "h": "foil"}, {"w": "Milkshake", "h": "straw"}, {"w": "Onion Rings", "h": "batter"}, {"w": "Fried Chicken", "h": "bucket"}, {"w": "Sub Sandwich", "h": "loaf"}, {"w": "Quesadilla", "h": "melt"}, {"w": "Nachos", "h": "sharing"}, {"w": "Doughnut", "h": "hole"}, {"w": "Pretzel", "h": "twist"}, {"w": "Corn Dog", "h": "stick"}, {"w": "Chicken Wings", "h": "messy"}, {"w": "Wrap", "h": "roll"}, {"w": "Falafel", "h": "ball"}, {"w": "Kebab", "h": "skewer"}, {"w": "Gyro", "h": "pita"}, {"w": "Egg Roll", "h": "crispy"}, {"w": "Spring Roll", "h": "thin"}, {"w": "Fish and Chips", "h": "vinegar"}, {"w": "Slushie", "h": "icy"}, {"w": "Soft Serve", "h": "swirl"}, {"w": "Mozzarella Sticks", "h": "stretchy"}, {"w": "Poutine", "h": "gravy"}, {"w": "Bagel", "h": "ring"}, {"w": "Croissant", "h": "flaky"}, {"w": "Hash Browns", "h": "breakfast"}, {"w": "Pancakes", "h": "stack"}, {"w": "Waffle", "h": "syrup"}, {"w": "Smoothie", "h": "blend"}, {"w": "McDonald's", "h": "golden"}, {"w": "Burger King", "h": "flame"}, {"w": "KFC", "h": "colonel"}, {"w": "Subway", "h": "footlong"}, {"w": "Taco Bell", "h": "border"}, {"w": "Wendy's", "h": "square"}, {"w": "Domino's", "h": "boxes"}, {"w": "Pizza Hut", "h": "roof"}, {"w": "Chick-fil-A", "h": "sunday"}, {"w": "Five Guys", "h": "peanuts"}, {"w": "Dunkin'", "h": "coffee"}, {"w": "Starbucks", "h": "mermaid"}, {"w": "Chipotle", "h": "bowl"}, {"w": "Popeyes", "h": "spicy"}, {"w": "In-N-Out", "h": "west"}, {"w": "Shake Shack", "h": "trendy"}], "Animals": [{"w": "Lion", "h": "mane"}, {"w": "Tiger", "h": "stripes"}, {"w": "Elephant", "h": "trunk"}, {"w": "Giraffe", "h": "tall"}, {"w": "Zebra", "h": "barcode"}, {"w": "Kangaroo", "h": "pocket"}, {"w": "Penguin", "h": "tuxedo"}, {"w": "Dolphin", "h": "flip"}, {"w": "Shark", "h": "fin"}, {"w": "Whale", "h": "spout"}, {"w": "Octopus", "h": "ink"}, {"w": "Crocodile", "h": "snap"}, {"w": "Snake", "h": "hiss"}, {"w": "Frog", "h": "leap"}, {"w": "Owl", "h": "night"}, {"w": "Eagle", "h": "soar"}, {"w": "Bear", "h": "honey"}, {"w": "Wolf", "h": "moon"}, {"w": "Fox", "h": "sly"}, {"w": "Rabbit", "h": "burrow"}, {"w": "Deer", "h": "antlers"}, {"w": "Horse", "h": "saddle"}, {"w": "Cow", "h": "milk"}, {"w": "Pig", "h": "smelly"}, {"w": "Sheep", "h": "wool"}, {"w": "Chicken", "h": "coop"}, {"w": "Duck", "h": "pond"}, {"w": "Goat", "h": "climb"}, {"w": "Monkey", "h": "banana"}, {"w": "Gorilla", "h": "chest"}, {"w": "Panda", "h": "bamboo"}, {"w": "Koala", "h": "sleepy"}, {"w": "Sloth", "h": "slow"}, {"w": "Hedgehog", "h": "prickly"}, {"w": "Bat", "h": "cave"}, {"w": "Camel", "h": "desert"}, {"w": "Rhinoceros", "h": "charge"}, {"w": "Hippopotamus", "h": "mud"}, {"w": "Cheetah", "h": "fast"}, {"w": "Leopard", "h": "spots"}, {"w": "Flamingo", "h": "pink"}, {"w": "Peacock", "h": "fan"}, {"w": "Parrot", "h": "repeat"}, {"w": "Crab", "h": "sideways"}, {"w": "Lobster", "h": "claw"}, {"w": "Jellyfish", "h": "sting"}, {"w": "Turtle", "h": "shell"}, {"w": "Bee", "h": "buzz"}, {"w": "Spider", "h": "web"}, {"w": "Butterfly", "h": "flutter"}], "Countries": [{"w": "France", "h": "beret"}, {"w": "Italy", "h": "boot"}, {"w": "Spain", "h": "siesta"}, {"w": "Germany", "h": "beer"}, {"w": "Japan", "h": "cherry"}, {"w": "China", "h": "wall"}, {"w": "India", "h": "spice"}, {"w": "Brazil", "h": "carnival"}, {"w": "Egypt", "h": "sand"}, {"w": "Greece", "h": "olives"}, {"w": "Mexico", "h": "sombrero"}, {"w": "Canada", "h": "maple"}, {"w": "Australia", "h": "outback"}, {"w": "Russia", "h": "cold"}, {"w": "USA", "h": "eagle"}, {"w": "United Kingdom", "h": "tea"}, {"w": "Ireland", "h": "clover"}, {"w": "Netherlands", "h": "tulip"}, {"w": "Sweden", "h": "flatpack"}, {"w": "Norway", "h": "fjord"}, {"w": "Switzerland", "h": "neutral"}, {"w": "Portugal", "h": "coast"}, {"w": "Turkey", "h": "bridge"}, {"w": "Argentina", "h": "tango"}, {"w": "Peru", "h": "llama"}, {"w": "Chile", "h": "narrow"}, {"w": "South Africa", "h": "safari"}, {"w": "Kenya", "h": "savanna"}, {"w": "Morocco", "h": "market"}, {"w": "Thailand", "h": "temple"}, {"w": "Vietnam", "h": "noodle"}, {"w": "South Korea", "h": "pop"}, {"w": "Indonesia", "h": "islands"}, {"w": "Philippines", "h": "tropical"}, {"w": "Saudi Arabia", "h": "oil"}, {"w": "Iceland", "h": "geyser"}, {"w": "Finland", "h": "sauna"}, {"w": "Denmark", "h": "bricks"}, {"w": "Poland", "h": "pierogi"}, {"w": "Austria", "h": "alps"}, {"w": "Belgium", "h": "waffle"}, {"w": "Hungary", "h": "bath"}, {"w": "Czechia", "h": "castle"}, {"w": "New Zealand", "h": "sheep"}, {"w": "Cuba", "h": "cigar"}, {"w": "Jamaica", "h": "reggae"}, {"w": "Nigeria", "h": "drum"}, {"w": "Colombia", "h": "coffee"}, {"w": "Israel", "h": "ancient"}, {"w": "Singapore", "h": "skyline"}], "Fruits & Veg": [{"w": "Apple", "h": "doctor"}, {"w": "Banana", "h": "peel"}, {"w": "Orange", "h": "segment"}, {"w": "Strawberry", "h": "seeds"}, {"w": "Grapes", "h": "bunch"}, {"w": "Watermelon", "h": "summer"}, {"w": "Pineapple", "h": "crown"}, {"w": "Mango", "h": "tropical"}, {"w": "Peach", "h": "fuzzy"}, {"w": "Cherry", "h": "pit"}, {"w": "Lemon", "h": "sour"}, {"w": "Lime", "h": "green"}, {"w": "Blueberry", "h": "tiny"}, {"w": "Raspberry", "h": "bumpy"}, {"w": "Kiwi", "h": "bird"}, {"w": "Pear", "h": "bell"}, {"w": "Plum", "h": "purple"}, {"w": "Coconut", "h": "island"}, {"w": "Avocado", "h": "toast"}, {"w": "Pomegranate", "h": "jewels"}, {"w": "Carrot", "h": "rabbit"}, {"w": "Potato", "h": "couch"}, {"w": "Tomato", "h": "red"}, {"w": "Cucumber", "h": "cool"}, {"w": "Broccoli", "h": "trees"}, {"w": "Cauliflower", "h": "pale"}, {"w": "Spinach", "h": "strong"}, {"w": "Lettuce", "h": "salad"}, {"w": "Onion", "h": "tears"}, {"w": "Garlic", "h": "vampire"}, {"w": "Pepper", "h": "heat"}, {"w": "Corn", "h": "field"}, {"w": "Peas", "h": "pod"}, {"w": "Mushroom", "h": "fungus"}, {"w": "Eggplant", "h": "shiny"}, {"w": "Zucchini", "h": "squash"}, {"w": "Pumpkin", "h": "carve"}, {"w": "Celery", "h": "crunch"}, {"w": "Cabbage", "h": "leaves"}, {"w": "Beetroot", "h": "stain"}, {"w": "Radish", "h": "peppery"}, {"w": "Sweet Potato", "h": "orange"}, {"w": "Asparagus", "h": "spears"}, {"w": "Kale", "h": "superfood"}, {"w": "Ginger", "h": "root"}, {"w": "Apricot", "h": "stone"}, {"w": "Fig", "h": "newton"}, {"w": "Grapefruit", "h": "bitter"}, {"w": "Cranberry", "h": "tart"}, {"w": "Brussels Sprout", "h": "mini"}], "Sports": [{"w": "Soccer", "h": "goal"}, {"w": "Basketball", "h": "hoop"}, {"w": "Tennis", "h": "net"}, {"w": "Golf", "h": "green"}, {"w": "Baseball", "h": "diamond"}, {"w": "American Football", "h": "touchdown"}, {"w": "Rugby", "h": "scrum"}, {"w": "Cricket", "h": "wicket"}, {"w": "Hockey", "h": "puck"}, {"w": "Volleyball", "h": "spike"}, {"w": "Boxing", "h": "ring"}, {"w": "Swimming", "h": "lane"}, {"w": "Cycling", "h": "pedal"}, {"w": "Running", "h": "track"}, {"w": "Skiing", "h": "slope"}, {"w": "Snowboarding", "h": "powder"}, {"w": "Surfing", "h": "wave"}, {"w": "Skateboarding", "h": "ramp"}, {"w": "Gymnastics", "h": "flip"}, {"w": "Wrestling", "h": "mat"}, {"w": "Karate", "h": "belt"}, {"w": "Judo", "h": "throw"}, {"w": "Fencing", "h": "foil"}, {"w": "Archery", "h": "target"}, {"w": "Rowing", "h": "oar"}, {"w": "Sailing", "h": "wind"}, {"w": "Badminton", "h": "shuttle"}, {"w": "Table Tennis", "h": "paddle"}, {"w": "Bowling", "h": "pins"}, {"w": "Darts", "h": "bullseye"}, {"w": "Climbing", "h": "grip"}, {"w": "Diving", "h": "splash"}, {"w": "Triathlon", "h": "endurance"}, {"w": "Marathon", "h": "distance"}, {"w": "Polo", "h": "horse"}, {"w": "Equestrian", "h": "stable"}, {"w": "Figure Skating", "h": "spin"}, {"w": "Speed Skating", "h": "blade"}, {"w": "Curling", "h": "broom"}, {"w": "Lacrosse", "h": "cradle"}, {"w": "Handball", "h": "court"}, {"w": "Squash", "h": "wall"}, {"w": "Weightlifting", "h": "barbell"}, {"w": "Sumo", "h": "heavy"}, {"w": "Martial Arts", "h": "combat"}, {"w": "Motorsport", "h": "engine"}, {"w": "Formula One", "h": "pit"}, {"w": "Kayaking", "h": "rapids"}, {"w": "Water Polo", "h": "pool"}, {"w": "Cheerleading", "h": "pompom"}], "Jobs": [{"w": "Doctor", "h": "stethoscope"}, {"w": "Nurse", "h": "ward"}, {"w": "Teacher", "h": "chalk"}, {"w": "Police Officer", "h": "badge"}, {"w": "Firefighter", "h": "hose"}, {"w": "Chef", "h": "knife"}, {"w": "Pilot", "h": "cockpit"}, {"w": "Lawyer", "h": "court"}, {"w": "Engineer", "h": "blueprint"}, {"w": "Architect", "h": "building"}, {"w": "Dentist", "h": "drill"}, {"w": "Plumber", "h": "pipe"}, {"w": "Electrician", "h": "wire"}, {"w": "Carpenter", "h": "wood"}, {"w": "Farmer", "h": "field"}, {"w": "Scientist", "h": "lab"}, {"w": "Accountant", "h": "numbers"}, {"w": "Banker", "h": "vault"}, {"w": "Journalist", "h": "headline"}, {"w": "Photographer", "h": "lens"}, {"w": "Artist", "h": "canvas"}, {"w": "Musician", "h": "notes"}, {"w": "Actor", "h": "script"}, {"w": "Singer", "h": "microphone"}, {"w": "Dancer", "h": "routine"}, {"w": "Writer", "h": "pen"}, {"w": "Programmer", "h": "keyboard"}, {"w": "Designer", "h": "mockup"}, {"w": "Mechanic", "h": "grease"}, {"w": "Barber", "h": "scissors"}, {"w": "Waiter", "h": "tray"}, {"w": "Bartender", "h": "cocktail"}, {"w": "Cashier", "h": "register"}, {"w": "Librarian", "h": "quiet"}, {"w": "Veterinarian", "h": "paws"}, {"w": "Surgeon", "h": "scalpel"}, {"w": "Astronaut", "h": "orbit"}, {"w": "Soldier", "h": "uniform"}, {"w": "Sailor", "h": "deck"}, {"w": "Postman", "h": "letter"}, {"w": "Taxi Driver", "h": "meter"}, {"w": "Bus Driver", "h": "route"}, {"w": "Judge", "h": "gavel"}, {"w": "Politician", "h": "vote"}, {"w": "Detective", "h": "clue"}, {"w": "Pharmacist", "h": "pills"}, {"w": "Tailor", "h": "thread"}, {"w": "Baker", "h": "flour"}, {"w": "Florist", "h": "bouquet"}, {"w": "Coach", "h": "whistle"}], "Landmarks": [{"w": "Eiffel Tower", "h": "iron"}, {"w": "Statue of Liberty", "h": "torch"}, {"w": "Big Ben", "h": "chime"}, {"w": "Great Wall", "h": "long"}, {"w": "Taj Mahal", "h": "marble"}, {"w": "Colosseum", "h": "arena"}, {"w": "Pyramids of Giza", "h": "tomb"}, {"w": "Leaning Tower of Pisa", "h": "tilt"}, {"w": "Christ the Redeemer", "h": "arms"}, {"w": "Sydney Opera House", "h": "sails"}, {"w": "Mount Rushmore", "h": "faces"}, {"w": "Golden Gate Bridge", "h": "fog"}, {"w": "Stonehenge", "h": "mystery"}, {"w": "Machu Picchu", "h": "ruins"}, {"w": "Sphinx", "h": "riddle"}, {"w": "Empire State Building", "h": "skyscraper"}, {"w": "Burj Khalifa", "h": "tallest"}, {"w": "Sagrada Familia", "h": "spires"}, {"w": "Notre-Dame", "h": "cathedral"}, {"w": "Acropolis", "h": "columns"}, {"w": "Petra", "h": "rose"}, {"w": "Niagara Falls", "h": "roar"}, {"w": "Grand Canyon", "h": "gorge"}, {"w": "Mount Everest", "h": "peak"}, {"w": "Mount Fuji", "h": "volcano"}, {"w": "Times Square", "h": "neon"}, {"w": "Buckingham Palace", "h": "guard"}, {"w": "Tower Bridge", "h": "drawbridge"}, {"w": "Brandenburg Gate", "h": "gate"}, {"w": "Tower of London", "h": "jewels"}, {"w": "Hollywood Sign", "h": "letters"}, {"w": "Las Vegas Strip", "h": "casino"}, {"w": "Disney Castle", "h": "fairytale"}, {"w": "Angkor Wat", "h": "jungle"}, {"w": "Kremlin", "h": "fortress"}, {"w": "Red Square", "h": "parade"}, {"w": "Chichen Itza", "h": "pyramid"}, {"w": "Easter Island", "h": "heads"}, {"w": "Uluru", "h": "rock"}, {"w": "Victoria Falls", "h": "mist"}, {"w": "Mont Saint-Michel", "h": "tide"}, {"w": "Neuschwanstein", "h": "turret"}, {"w": "Trevi Fountain", "h": "coin"}, {"w": "Vatican", "h": "pope"}, {"w": "CN Tower", "h": "needle"}, {"w": "Space Needle", "h": "saucer"}, {"w": "Louvre", "h": "glass"}, {"w": "Alhambra", "h": "moorish"}, {"w": "Great Barrier Reef", "h": "coral"}, {"w": "Santorini", "h": "whitewash"}], "Instruments": [{"w": "Piano", "h": "keys"}, {"w": "Guitar", "h": "strum"}, {"w": "Violin", "h": "bow"}, {"w": "Drums", "h": "beat"}, {"w": "Flute", "h": "breath"}, {"w": "Trumpet", "h": "brass"}, {"w": "Saxophone", "h": "jazz"}, {"w": "Cello", "h": "seated"}, {"w": "Clarinet", "h": "reed"}, {"w": "Trombone", "h": "slide"}, {"w": "Harp", "h": "pluck"}, {"w": "Accordion", "h": "squeeze"}, {"w": "Banjo", "h": "twang"}, {"w": "Ukulele", "h": "tiny"}, {"w": "Bass Guitar", "h": "low"}, {"w": "Harmonica", "h": "pocket"}, {"w": "Tambourine", "h": "jingle"}, {"w": "Xylophone", "h": "mallet"}, {"w": "Bagpipes", "h": "drone"}, {"w": "Organ", "h": "church"}, {"w": "French Horn", "h": "coil"}, {"w": "Tuba", "h": "oompah"}, {"w": "Oboe", "h": "double"}, {"w": "Bassoon", "h": "deep"}, {"w": "Mandolin", "h": "folk"}, {"w": "Sitar", "h": "exotic"}, {"w": "Double Bass", "h": "upright"}, {"w": "Maracas", "h": "shake"}, {"w": "Bongos", "h": "tap"}, {"w": "Cymbals", "h": "crash"}, {"w": "Triangle", "h": "ting"}, {"w": "Recorder", "h": "school"}, {"w": "Synthesizer", "h": "electronic"}, {"w": "Keyboard", "h": "electric"}, {"w": "Electric Guitar", "h": "amp"}, {"w": "Cajon", "h": "box"}, {"w": "Glockenspiel", "h": "bells"}, {"w": "Vibraphone", "h": "shimmer"}, {"w": "Timpani", "h": "boom"}, {"w": "Snare Drum", "h": "rattle"}, {"w": "Castanets", "h": "click"}, {"w": "Lute", "h": "medieval"}, {"w": "Theremin", "h": "spooky"}, {"w": "Pan Flute", "h": "andes"}, {"w": "Didgeridoo", "h": "long"}, {"w": "Steel Drum", "h": "tropical"}, {"w": "Gong", "h": "resonate"}, {"w": "Lyre", "h": "ancient"}, {"w": "Kalimba", "h": "thumb"}, {"w": "Concertina", "h": "bellows"}], "Video Games": [{"w": "Minecraft", "h": "blocks"}, {"w": "Tetris", "h": "falling"}, {"w": "Pac-Man", "h": "maze"}, {"w": "Super Mario", "h": "mushroom"}, {"w": "The Legend of Zelda", "h": "hero"}, {"w": "Fortnite", "h": "battle"}, {"w": "Pokemon", "h": "catch"}, {"w": "Call of Duty", "h": "war"}, {"w": "Grand Theft Auto", "h": "crime"}, {"w": "The Sims", "h": "life"}, {"w": "Sonic", "h": "speed"}, {"w": "Donkey Kong", "h": "barrel"}, {"w": "Space Invaders", "h": "aliens"}, {"w": "Street Fighter", "h": "combo"}, {"w": "Mortal Kombat", "h": "fatality"}, {"w": "FIFA", "h": "football"}, {"w": "Halo", "h": "spartan"}, {"w": "Doom", "h": "demons"}, {"w": "Counter-Strike", "h": "bomb"}, {"w": "Among Us", "h": "suspicious"}, {"w": "Roblox", "h": "blocky"}, {"w": "Candy Crush", "h": "match"}, {"w": "Angry Birds", "h": "slingshot"}, {"w": "Animal Crossing", "h": "island"}, {"w": "Stardew Valley", "h": "farm"}, {"w": "Overwatch", "h": "heroes"}, {"w": "League of Legends", "h": "lane"}, {"w": "Dota", "h": "arena"}, {"w": "World of Warcraft", "h": "online"}, {"w": "Skyrim", "h": "dragon"}, {"w": "The Witcher", "h": "monster"}, {"w": "Cyberpunk", "h": "neon"}, {"w": "Red Dead", "h": "cowboy"}, {"w": "Assassin's Creed", "h": "hidden"}, {"w": "God of War", "h": "rage"}, {"w": "Final Fantasy", "h": "epic"}, {"w": "Resident Evil", "h": "zombie"}, {"w": "Silent Hill", "h": "fog"}, {"w": "Tomb Raider", "h": "relic"}, {"w": "Metroid", "h": "suit"}, {"w": "Kirby", "h": "pink"}, {"w": "Mega Man", "h": "robot"}, {"w": "Crash Bandicoot", "h": "spin"}, {"w": "Spyro", "h": "purple"}, {"w": "Portal", "h": "puzzle"}, {"w": "Half-Life", "h": "crowbar"}, {"w": "Bioshock", "h": "underwater"}, {"w": "Tony Hawk", "h": "kickflip"}, {"w": "Guitar Hero", "h": "plastic"}, {"w": "Rocket League", "h": "cars"}], "Mythical Creatures": [{"w": "Dragon", "h": "fire"}, {"w": "Unicorn", "h": "horn"}, {"w": "Phoenix", "h": "ashes"}, {"w": "Mermaid", "h": "tail"}, {"w": "Vampire", "h": "blood"}, {"w": "Werewolf", "h": "moon"}, {"w": "Zombie", "h": "shamble"}, {"w": "Ghost", "h": "boo"}, {"w": "Witch", "h": "broom"}, {"w": "Wizard", "h": "staff"}, {"w": "Fairy", "h": "dust"}, {"w": "Elf", "h": "ears"}, {"w": "Dwarf", "h": "mine"}, {"w": "Goblin", "h": "green"}, {"w": "Troll", "h": "bridge"}, {"w": "Ogre", "h": "swamp"}, {"w": "Griffin", "h": "wings"}, {"w": "Centaur", "h": "hooves"}, {"w": "Minotaur", "h": "labyrinth"}, {"w": "Medusa", "h": "stone"}, {"w": "Cyclops", "h": "eye"}, {"w": "Pegasus", "h": "flying"}, {"w": "Sphinx", "h": "riddle"}, {"w": "Kraken", "h": "tentacles"}, {"w": "Loch Ness Monster", "h": "lake"}, {"w": "Bigfoot", "h": "footprint"}, {"w": "Yeti", "h": "snow"}, {"w": "Genie", "h": "lamp"}, {"w": "Banshee", "h": "scream"}, {"w": "Leprechaun", "h": "gold"}, {"w": "Gnome", "h": "garden"}, {"w": "Hydra", "h": "heads"}, {"w": "Chimera", "h": "hybrid"}, {"w": "Basilisk", "h": "gaze"}, {"w": "Gargoyle", "h": "rooftop"}, {"w": "Mummy", "h": "bandage"}, {"w": "Demon", "h": "underworld"}, {"w": "Angel", "h": "halo"}, {"w": "Imp", "h": "mischief"}, {"w": "Djinn", "h": "smoke"}, {"w": "Kitsune", "h": "fox"}, {"w": "Cerberus", "h": "guard"}, {"w": "Harpy", "h": "talons"}, {"w": "Satyr", "h": "goat"}, {"w": "Nymph", "h": "nature"}, {"w": "Cupid", "h": "arrow"}, {"w": "Valkyrie", "h": "battle"}, {"w": "Golem", "h": "clay"}, {"w": "Frankenstein's Monster", "h": "bolts"}, {"w": "Will-o'-the-Wisp", "h": "marsh"}], "Drinks": [{"w": "Coffee", "h": "caffeine"}, {"w": "Tea", "h": "steep"}, {"w": "Water", "h": "clear"}, {"w": "Milk", "h": "cow"}, {"w": "Orange Juice", "h": "breakfast"}, {"w": "Lemonade", "h": "stand"}, {"w": "Cola", "h": "fizz"}, {"w": "Hot Chocolate", "h": "cocoa"}, {"w": "Smoothie", "h": "blend"}, {"w": "Beer", "h": "foam"}, {"w": "Wine", "h": "vineyard"}, {"w": "Champagne", "h": "bubbles"}, {"w": "Whiskey", "h": "barrel"}, {"w": "Vodka", "h": "shot"}, {"w": "Rum", "h": "pirate"}, {"w": "Gin", "h": "juniper"}, {"w": "Tequila", "h": "agave"}, {"w": "Margarita", "h": "rim"}, {"w": "Mojito", "h": "mint"}, {"w": "Martini", "h": "olive"}, {"w": "Cocktail", "h": "mixer"}, {"w": "Milkshake", "h": "thick"}, {"w": "Iced Tea", "h": "cold"}, {"w": "Energy Drink", "h": "boost"}, {"w": "Sparkling Water", "h": "sparkle"}, {"w": "Apple Juice", "h": "orchard"}, {"w": "Cappuccino", "h": "froth"}, {"w": "Latte", "h": "art"}, {"w": "Espresso", "h": "tiny"}, {"w": "Mocha", "h": "chocolate"}, {"w": "Matcha", "h": "green"}, {"w": "Soda", "h": "pop"}, {"w": "Root Beer", "h": "float"}, {"w": "Ginger Ale", "h": "settle"}, {"w": "Cider", "h": "apple"}, {"w": "Sangria", "h": "fruit"}, {"w": "Punch", "h": "bowl"}, {"w": "Cocoa", "h": "warm"}, {"w": "Frappe", "h": "iced"}, {"w": "Kombucha", "h": "fermented"}, {"w": "Coconut Water", "h": "tropical"}, {"w": "Cranberry Juice", "h": "red"}, {"w": "Tomato Juice", "h": "savory"}, {"w": "Bubble Tea", "h": "pearls"}, {"w": "Eggnog", "h": "holiday"}, {"w": "Pina Colada", "h": "beach"}, {"w": "Bloody Mary", "h": "spicy"}, {"w": "Sake", "h": "rice"}, {"w": "Brandy", "h": "snifter"}, {"w": "Lemon Squash", "h": "dilute"}], "Desserts": [{"w": "Ice Cream", "h": "scoop"}, {"w": "Cake", "h": "candles"}, {"w": "Cookie", "h": "crumble"}, {"w": "Brownie", "h": "fudge"}, {"w": "Cupcake", "h": "frosting"}, {"w": "Doughnut", "h": "glaze"}, {"w": "Cheesecake", "h": "creamy"}, {"w": "Apple Pie", "h": "grandma"}, {"w": "Pancakes", "h": "flip"}, {"w": "Waffle", "h": "grid"}, {"w": "Chocolate", "h": "cocoa"}, {"w": "Pudding", "h": "spoon"}, {"w": "Jelly", "h": "wobble"}, {"w": "Tiramisu", "h": "coffee"}, {"w": "Macaron", "h": "colorful"}, {"w": "Croissant", "h": "flaky"}, {"w": "Eclair", "h": "cream"}, {"w": "Muffin", "h": "top"}, {"w": "Pie", "h": "crust"}, {"w": "Tart", "h": "bite"}, {"w": "Trifle", "h": "layers"}, {"w": "Custard", "h": "yellow"}, {"w": "Mousse", "h": "airy"}, {"w": "Sundae", "h": "cherry"}, {"w": "Sorbet", "h": "fruity"}, {"w": "Gelato", "h": "italian"}, {"w": "Fudge", "h": "dense"}, {"w": "Caramel", "h": "sticky"}, {"w": "Toffee", "h": "chewy"}, {"w": "Marshmallow", "h": "campfire"}, {"w": "Candy", "h": "sweet"}, {"w": "Lollipop", "h": "stick"}, {"w": "Gingerbread", "h": "house"}, {"w": "Shortbread", "h": "buttery"}, {"w": "Scone", "h": "tea"}, {"w": "Banana Split", "h": "boat"}, {"w": "Profiterole", "h": "tower"}, {"w": "Panna Cotta", "h": "jiggle"}, {"w": "Baklava", "h": "honey"}, {"w": "Churros", "h": "cinnamon"}, {"w": "Crepe", "h": "thin"}, {"w": "Flan", "h": "caramel"}, {"w": "Meringue", "h": "whip"}, {"w": "Strudel", "h": "apple"}, {"w": "Pavlova", "h": "cloud"}, {"w": "Fruit Salad", "h": "mixed"}, {"w": "Popsicle", "h": "frozen"}, {"w": "Honey", "h": "bee"}, {"w": "Cinnamon Roll", "h": "spiral"}, {"w": "Banoffee Pie", "h": "banana"}], "Vehicles": [{"w": "Car", "h": "wheels"}, {"w": "Bus", "h": "stop"}, {"w": "Truck", "h": "haul"}, {"w": "Motorcycle", "h": "leather"}, {"w": "Bicycle", "h": "pedal"}, {"w": "Train", "h": "tracks"}, {"w": "Airplane", "h": "wings"}, {"w": "Helicopter", "h": "rotor"}, {"w": "Boat", "h": "float"}, {"w": "Ship", "h": "sea"}, {"w": "Submarine", "h": "dive"}, {"w": "Rocket", "h": "launch"}, {"w": "Scooter", "h": "kick"}, {"w": "Tractor", "h": "farm"}, {"w": "Van", "h": "cargo"}, {"w": "Taxi", "h": "fare"}, {"w": "Ambulance", "h": "siren"}, {"w": "Fire Truck", "h": "ladder"}, {"w": "Police Car", "h": "chase"}, {"w": "Tank", "h": "armor"}, {"w": "Jet", "h": "fast"}, {"w": "Yacht", "h": "luxury"}, {"w": "Canoe", "h": "paddle"}, {"w": "Kayak", "h": "rapids"}, {"w": "Sailboat", "h": "mast"}, {"w": "Ferry", "h": "crossing"}, {"w": "Tram", "h": "rail"}, {"w": "Subway", "h": "underground"}, {"w": "Limousine", "h": "stretch"}, {"w": "Convertible", "h": "breeze"}, {"w": "SUV", "h": "family"}, {"w": "Pickup Truck", "h": "bed"}, {"w": "Forklift", "h": "pallet"}, {"w": "Bulldozer", "h": "push"}, {"w": "Crane", "h": "lift"}, {"w": "Excavator", "h": "dig"}, {"w": "Cement Mixer", "h": "spin"}, {"w": "Skateboard", "h": "deck"}, {"w": "Segway", "h": "balance"}, {"w": "Hot Air Balloon", "h": "drift"}, {"w": "Blimp", "h": "airship"}, {"w": "Glider", "h": "soar"}, {"w": "Jet Ski", "h": "spray"}, {"w": "Hovercraft", "h": "cushion"}, {"w": "Cable Car", "h": "mountain"}, {"w": "Monorail", "h": "single"}, {"w": "Spaceship", "h": "cosmos"}, {"w": "Snowmobile", "h": "snow"}, {"w": "Go-Kart", "h": "tiny"}, {"w": "Rickshaw", "h": "pull"}], "Clothing": [{"w": "T-Shirt", "h": "casual"}, {"w": "Jeans", "h": "denim"}, {"w": "Dress", "h": "twirl"}, {"w": "Skirt", "h": "pleat"}, {"w": "Jacket", "h": "zip"}, {"w": "Coat", "h": "winter"}, {"w": "Sweater", "h": "cozy"}, {"w": "Hoodie", "h": "hood"}, {"w": "Shorts", "h": "summer"}, {"w": "Socks", "h": "pair"}, {"w": "Shoes", "h": "laces"}, {"w": "Boots", "h": "tall"}, {"w": "Sneakers", "h": "athletic"}, {"w": "Sandals", "h": "strap"}, {"w": "Hat", "h": "head"}, {"w": "Cap", "h": "brim"}, {"w": "Scarf", "h": "wrap"}, {"w": "Gloves", "h": "fingers"}, {"w": "Belt", "h": "buckle"}, {"w": "Tie", "h": "knot"}, {"w": "Suit", "h": "formal"}, {"w": "Shirt", "h": "button"}, {"w": "Blouse", "h": "silky"}, {"w": "Trousers", "h": "legs"}, {"w": "Leggings", "h": "stretch"}, {"w": "Pajamas", "h": "sleep"}, {"w": "Underwear", "h": "hidden"}, {"w": "Bra", "h": "support"}, {"w": "Vest", "h": "sleeveless"}, {"w": "Cardigan", "h": "grandpa"}, {"w": "Blazer", "h": "smart"}, {"w": "Tuxedo", "h": "fancy"}, {"w": "Gown", "h": "ballroom"}, {"w": "Robe", "h": "lounge"}, {"w": "Swimsuit", "h": "pool"}, {"w": "Bikini", "h": "beach"}, {"w": "Raincoat", "h": "waterproof"}, {"w": "Poncho", "h": "cape"}, {"w": "Mittens", "h": "thumbs"}, {"w": "Beanie", "h": "knit"}, {"w": "Helmet", "h": "protect"}, {"w": "Apron", "h": "cooking"}, {"w": "Overalls", "h": "bib"}, {"w": "Jumpsuit", "h": "onesie"}, {"w": "Kimono", "h": "japan"}, {"w": "Sari", "h": "drape"}, {"w": "Kilt", "h": "scotland"}, {"w": "Slippers", "h": "comfy"}, {"w": "Heels", "h": "click"}, {"w": "Flip-Flops", "h": "flap"}], "Household Items": [{"w": "Sofa", "h": "lounge"}, {"w": "Chair", "h": "sit"}, {"w": "Table", "h": "flat"}, {"w": "Bed", "h": "sleep"}, {"w": "Lamp", "h": "glow"}, {"w": "Mirror", "h": "reflection"}, {"w": "Clock", "h": "tick"}, {"w": "Television", "h": "screen"}, {"w": "Refrigerator", "h": "cold"}, {"w": "Oven", "h": "bake"}, {"w": "Microwave", "h": "beep"}, {"w": "Toaster", "h": "pop"}, {"w": "Kettle", "h": "boil"}, {"w": "Blender", "h": "whir"}, {"w": "Fork", "h": "prongs"}, {"w": "Spoon", "h": "scoop"}, {"w": "Knife", "h": "sharp"}, {"w": "Plate", "h": "dish"}, {"w": "Cup", "h": "sip"}, {"w": "Bowl", "h": "round"}, {"w": "Pillow", "h": "fluff"}, {"w": "Blanket", "h": "warm"}, {"w": "Towel", "h": "dry"}, {"w": "Curtain", "h": "window"}, {"w": "Rug", "h": "floor"}, {"w": "Vacuum", "h": "suck"}, {"w": "Broom", "h": "sweep"}, {"w": "Mop", "h": "wet"}, {"w": "Bucket", "h": "pail"}, {"w": "Sink", "h": "faucet"}, {"w": "Toilet", "h": "flush"}, {"w": "Shower", "h": "rinse"}, {"w": "Bathtub", "h": "soak"}, {"w": "Dishwasher", "h": "dishes"}, {"w": "Washing Machine", "h": "spin"}, {"w": "Iron", "h": "press"}, {"w": "Hairdryer", "h": "blow"}, {"w": "Fan", "h": "breeze"}, {"w": "Heater", "h": "warmth"}, {"w": "Candle", "h": "flame"}, {"w": "Vase", "h": "flowers"}, {"w": "Wardrobe", "h": "closet"}, {"w": "Desk", "h": "work"}, {"w": "Bookshelf", "h": "books"}, {"w": "Drawer", "h": "slide"}, {"w": "Doorbell", "h": "ring"}, {"w": "Trash Can", "h": "bin"}, {"w": "Frying Pan", "h": "sizzle"}, {"w": "Scissors", "h": "snip"}, {"w": "Remote Control", "h": "channel"}]};
+const CATEGORIES = {"Movies": [{"w": "Titanic", "h": "voyage"}, {"w": "Avatar", "h": "jungle"}, {"w": "Jaws", "h": "beach"}, {"w": "Frozen", "h": "kingdom"}, {"w": "Up", "h": "adventure"}, {"w": "Shrek", "h": "fairytale"}, {"w": "Joker", "h": "villain"}, {"w": "Gladiator", "h": "revenge"}, {"w": "Inception", "h": "mind"}, {"w": "Rocky", "h": "fight"}, {"w": "Cars", "h": "road"}, {"w": "Coco", "h": "music"}, {"w": "Alien", "h": "space"}, {"w": "Grease", "h": "dance"}, {"w": "Casablanca", "h": "romance"}, {"w": "Psycho", "h": "fear"}, {"w": "Brave", "h": "scotland"}, {"w": "Dumbo", "h": "flying"}, {"w": "Moana", "h": "sea"}, {"w": "Aladdin", "h": "magic"}, {"w": "Bambi", "h": "forest"}, {"w": "Tangled", "h": "princess"}, {"w": "Hercules", "h": "hero"}, {"w": "Goodfellas", "h": "crime"}, {"w": "Memento", "h": "twist"}, {"w": "Twister", "h": "storm"}, {"w": "Speed", "h": "rush"}, {"w": "Saw", "h": "blood"}, {"w": "Halloween", "h": "killer"}, {"w": "Ratatouille", "h": "french"}, {"w": "WALL-E", "h": "robot"}, {"w": "Avengers", "h": "team"}, {"w": "The Matrix", "h": "reality"}, {"w": "Frankenstein", "h": "monster"}, {"w": "Dracula", "h": "night"}, {"w": "Tarzan", "h": "wild"}, {"w": "Mulan", "h": "warrior"}, {"w": "Pinocchio", "h": "wish"}, {"w": "Cinderella", "h": "royal"}, {"w": "Pocahontas", "h": "nature"}, {"w": "Spotlight", "h": "secret"}, {"w": "Whiplash", "h": "ambition"}, {"w": "Birdman", "h": "stage"}, {"w": "Argo", "h": "escape"}, {"w": "Chicago", "h": "musical"}, {"w": "Amadeus", "h": "genius"}, {"w": "Braveheart", "h": "freedom"}, {"w": "Interstellar", "h": "time"}, {"w": "Parasite", "h": "class"}, {"w": "Toy Story", "h": "childhood"}], "Fast Food": [{"w": "Cheeseburger", "h": "grill"}, {"w": "French Fries", "h": "salty"}, {"w": "Pizza", "h": "slice"}, {"w": "Hot Dog", "h": "bun"}, {"w": "Chicken Nuggets", "h": "dip"}, {"w": "Taco", "h": "mexican"}, {"w": "Burrito", "h": "rolled"}, {"w": "Milkshake", "h": "thick"}, {"w": "Onion Rings", "h": "fried"}, {"w": "Fried Chicken", "h": "crispy"}, {"w": "Sub Sandwich", "h": "long"}, {"w": "Quesadilla", "h": "cheese"}, {"w": "Nachos", "h": "sharing"}, {"w": "Doughnut", "h": "sweet"}, {"w": "Pretzel", "h": "twisted"}, {"w": "Corn Dog", "h": "stick"}, {"w": "Chicken Wings", "h": "saucy"}, {"w": "Wrap", "h": "tortilla"}, {"w": "Falafel", "h": "veggie"}, {"w": "Kebab", "h": "grilled"}, {"w": "Gyro", "h": "greek"}, {"w": "Egg Roll", "h": "asian"}, {"w": "Spring Roll", "h": "fresh"}, {"w": "Fish and Chips", "h": "british"}, {"w": "Slushie", "h": "frozen"}, {"w": "Soft Serve", "h": "cone"}, {"w": "Mozzarella Sticks", "h": "stretchy"}, {"w": "Poutine", "h": "canadian"}, {"w": "Bagel", "h": "round"}, {"w": "Croissant", "h": "flaky"}, {"w": "Hash Browns", "h": "potato"}, {"w": "Pancakes", "h": "stack"}, {"w": "Waffle", "h": "breakfast"}, {"w": "Smoothie", "h": "fruit"}, {"w": "McDonald's", "h": "global"}, {"w": "Burger King", "h": "burgers"}, {"w": "KFC", "h": "chicken"}, {"w": "Subway", "h": "custom"}, {"w": "Taco Bell", "h": "spicy"}, {"w": "Wendy's", "h": "burgers"}, {"w": "Domino's", "h": "pizza"}, {"w": "Pizza Hut", "h": "pizza"}, {"w": "Chick-fil-A", "h": "chicken"}, {"w": "Five Guys", "h": "burgers"}, {"w": "Dunkin'", "h": "coffee"}, {"w": "Starbucks", "h": "coffee"}, {"w": "Chipotle", "h": "mexican"}, {"w": "Popeyes", "h": "chicken"}, {"w": "In-N-Out", "h": "burgers"}, {"w": "Shake Shack", "h": "burgers"}], "Animals": [{"w": "Lion", "h": "wild"}, {"w": "Tiger", "h": "stripes"}, {"w": "Elephant", "h": "huge"}, {"w": "Giraffe", "h": "tall"}, {"w": "Zebra", "h": "stripes"}, {"w": "Kangaroo", "h": "hop"}, {"w": "Penguin", "h": "cold"}, {"w": "Dolphin", "h": "smart"}, {"w": "Shark", "h": "teeth"}, {"w": "Whale", "h": "ocean"}, {"w": "Octopus", "h": "arms"}, {"w": "Crocodile", "h": "teeth"}, {"w": "Snake", "h": "slither"}, {"w": "Frog", "h": "pond"}, {"w": "Owl", "h": "night"}, {"w": "Eagle", "h": "sky"}, {"w": "Bear", "h": "forest"}, {"w": "Wolf", "h": "pack"}, {"w": "Fox", "h": "clever"}, {"w": "Rabbit", "h": "fluffy"}, {"w": "Deer", "h": "forest"}, {"w": "Horse", "h": "ride"}, {"w": "Cow", "h": "farm"}, {"w": "Pig", "h": "smelly"}, {"w": "Sheep", "h": "farm"}, {"w": "Chicken", "h": "egg"}, {"w": "Duck", "h": "pond"}, {"w": "Goat", "h": "climb"}, {"w": "Monkey", "h": "jungle"}, {"w": "Gorilla", "h": "strong"}, {"w": "Panda", "h": "cuddly"}, {"w": "Koala", "h": "sleepy"}, {"w": "Sloth", "h": "slow"}, {"w": "Hedgehog", "h": "spiky"}, {"w": "Bat", "h": "night"}, {"w": "Camel", "h": "desert"}, {"w": "Rhinoceros", "h": "horn"}, {"w": "Hippopotamus", "h": "mud"}, {"w": "Cheetah", "h": "fast"}, {"w": "Leopard", "h": "spots"}, {"w": "Flamingo", "h": "tropical"}, {"w": "Peacock", "h": "colorful"}, {"w": "Parrot", "h": "talk"}, {"w": "Crab", "h": "claws"}, {"w": "Lobster", "h": "claws"}, {"w": "Jellyfish", "h": "sting"}, {"w": "Turtle", "h": "shell"}, {"w": "Bee", "h": "sting"}, {"w": "Spider", "h": "creepy"}, {"w": "Butterfly", "h": "wings"}], "Countries": [{"w": "France", "h": "wine"}, {"w": "Italy", "h": "ancient"}, {"w": "Spain", "h": "beach"}, {"w": "Germany", "h": "beer"}, {"w": "Japan", "h": "island"}, {"w": "China", "h": "huge"}, {"w": "India", "h": "spice"}, {"w": "Brazil", "h": "rainforest"}, {"w": "Egypt", "h": "desert"}, {"w": "Greece", "h": "ancient"}, {"w": "Mexico", "h": "ancient"}, {"w": "Canada", "h": "cold"}, {"w": "Australia", "h": "remote"}, {"w": "Russia", "h": "winter"}, {"w": "USA", "h": "powerful"}, {"w": "United Kingdom", "h": "rainy"}, {"w": "Ireland", "h": "green"}, {"w": "Netherlands", "h": "flat"}, {"w": "Sweden", "h": "nordic"}, {"w": "Norway", "h": "mountains"}, {"w": "Switzerland", "h": "alps"}, {"w": "Portugal", "h": "coast"}, {"w": "Turkey", "h": "market"}, {"w": "Argentina", "h": "south"}, {"w": "Peru", "h": "andes"}, {"w": "Chile", "h": "andes"}, {"w": "South Africa", "h": "safari"}, {"w": "Kenya", "h": "safari"}, {"w": "Morocco", "h": "desert"}, {"w": "Thailand", "h": "tropical"}, {"w": "Vietnam", "h": "rice"}, {"w": "South Korea", "h": "tech"}, {"w": "Indonesia", "h": "islands"}, {"w": "Philippines", "h": "islands"}, {"w": "Saudi Arabia", "h": "desert"}, {"w": "Iceland", "h": "nordic"}, {"w": "Finland", "h": "nordic"}, {"w": "Denmark", "h": "nordic"}, {"w": "Poland", "h": "european"}, {"w": "Austria", "h": "alps"}, {"w": "Belgium", "h": "european"}, {"w": "Hungary", "h": "european"}, {"w": "Czechia", "h": "beer"}, {"w": "New Zealand", "h": "remote"}, {"w": "Cuba", "h": "caribbean"}, {"w": "Jamaica", "h": "caribbean"}, {"w": "Nigeria", "h": "african"}, {"w": "Colombia", "h": "south"}, {"w": "Israel", "h": "ancient"}, {"w": "Singapore", "h": "modern"}], "Fruits & Veg": [{"w": "Apple", "h": "doctor"}, {"w": "Banana", "h": "yellow"}, {"w": "Orange", "h": "citrus"}, {"w": "Strawberry", "h": "red"}, {"w": "Grapes", "h": "wine"}, {"w": "Watermelon", "h": "summer"}, {"w": "Pineapple", "h": "tropical"}, {"w": "Mango", "h": "tropical"}, {"w": "Peach", "h": "fuzzy"}, {"w": "Cherry", "h": "pit"}, {"w": "Lemon", "h": "sour"}, {"w": "Lime", "h": "green"}, {"w": "Blueberry", "h": "tiny"}, {"w": "Raspberry", "h": "berry"}, {"w": "Kiwi", "h": "fuzzy"}, {"w": "Pear", "h": "orchard"}, {"w": "Plum", "h": "purple"}, {"w": "Coconut", "h": "tropical"}, {"w": "Avocado", "h": "creamy"}, {"w": "Pomegranate", "h": "seeds"}, {"w": "Carrot", "h": "orange"}, {"w": "Potato", "h": "couch"}, {"w": "Tomato", "h": "salad"}, {"w": "Cucumber", "h": "cool"}, {"w": "Broccoli", "h": "healthy"}, {"w": "Cauliflower", "h": "white"}, {"w": "Spinach", "h": "leafy"}, {"w": "Lettuce", "h": "leafy"}, {"w": "Onion", "h": "layers"}, {"w": "Garlic", "h": "breath"}, {"w": "Pepper", "h": "spicy"}, {"w": "Corn", "h": "field"}, {"w": "Peas", "h": "tiny"}, {"w": "Mushroom", "h": "fungus"}, {"w": "Eggplant", "h": "purple"}, {"w": "Zucchini", "h": "squash"}, {"w": "Pumpkin", "h": "autumn"}, {"w": "Celery", "h": "crunchy"}, {"w": "Cabbage", "h": "leaves"}, {"w": "Beetroot", "h": "earthy"}, {"w": "Radish", "h": "root"}, {"w": "Sweet Potato", "h": "orange"}, {"w": "Asparagus", "h": "green"}, {"w": "Kale", "h": "healthy"}, {"w": "Ginger", "h": "spicy"}, {"w": "Apricot", "h": "small"}, {"w": "Fig", "h": "newton"}, {"w": "Grapefruit", "h": "citrus"}, {"w": "Cranberry", "h": "berry"}, {"w": "Brussels Sprout", "h": "tiny"}], "Sports": [{"w": "Soccer", "h": "ball"}, {"w": "Basketball", "h": "court"}, {"w": "Tennis", "h": "racket"}, {"w": "Golf", "h": "club"}, {"w": "Baseball", "h": "bat"}, {"w": "American Football", "h": "tackle"}, {"w": "Rugby", "h": "tackle"}, {"w": "Cricket", "h": "bat"}, {"w": "Hockey", "h": "ice"}, {"w": "Volleyball", "h": "net"}, {"w": "Boxing", "h": "ring"}, {"w": "Swimming", "h": "water"}, {"w": "Cycling", "h": "wheels"}, {"w": "Running", "h": "track"}, {"w": "Skiing", "h": "snow"}, {"w": "Snowboarding", "h": "snow"}, {"w": "Surfing", "h": "board"}, {"w": "Skateboarding", "h": "board"}, {"w": "Gymnastics", "h": "flexible"}, {"w": "Wrestling", "h": "mat"}, {"w": "Karate", "h": "combat"}, {"w": "Judo", "h": "combat"}, {"w": "Fencing", "h": "duel"}, {"w": "Archery", "h": "aim"}, {"w": "Rowing", "h": "water"}, {"w": "Sailing", "h": "wind"}, {"w": "Badminton", "h": "racket"}, {"w": "Table Tennis", "h": "racket"}, {"w": "Bowling", "h": "strike"}, {"w": "Darts", "h": "aim"}, {"w": "Climbing", "h": "wall"}, {"w": "Diving", "h": "pool"}, {"w": "Triathlon", "h": "endurance"}, {"w": "Marathon", "h": "endurance"}, {"w": "Polo", "h": "horse"}, {"w": "Equestrian", "h": "horse"}, {"w": "Figure Skating", "h": "ice"}, {"w": "Speed Skating", "h": "ice"}, {"w": "Curling", "h": "ice"}, {"w": "Lacrosse", "h": "stick"}, {"w": "Handball", "h": "court"}, {"w": "Squash", "h": "racket"}, {"w": "Weightlifting", "h": "strength"}, {"w": "Sumo", "h": "heavy"}, {"w": "Martial Arts", "h": "combat"}, {"w": "Motorsport", "h": "engine"}, {"w": "Formula One", "h": "race"}, {"w": "Kayaking", "h": "paddle"}, {"w": "Water Polo", "h": "pool"}, {"w": "Cheerleading", "h": "team"}], "Jobs": [{"w": "Doctor", "h": "hospital"}, {"w": "Nurse", "h": "hospital"}, {"w": "Teacher", "h": "school"}, {"w": "Police Officer", "h": "uniform"}, {"w": "Firefighter", "h": "emergency"}, {"w": "Chef", "h": "kitchen"}, {"w": "Pilot", "h": "sky"}, {"w": "Lawyer", "h": "court"}, {"w": "Engineer", "h": "build"}, {"w": "Architect", "h": "build"}, {"w": "Dentist", "h": "clinic"}, {"w": "Plumber", "h": "fix"}, {"w": "Electrician", "h": "fix"}, {"w": "Carpenter", "h": "tools"}, {"w": "Farmer", "h": "field"}, {"w": "Scientist", "h": "lab"}, {"w": "Accountant", "h": "numbers"}, {"w": "Banker", "h": "money"}, {"w": "Journalist", "h": "news"}, {"w": "Photographer", "h": "camera"}, {"w": "Artist", "h": "creative"}, {"w": "Musician", "h": "music"}, {"w": "Actor", "h": "stage"}, {"w": "Singer", "h": "voice"}, {"w": "Dancer", "h": "stage"}, {"w": "Writer", "h": "words"}, {"w": "Programmer", "h": "computer"}, {"w": "Designer", "h": "creative"}, {"w": "Mechanic", "h": "garage"}, {"w": "Barber", "h": "hair"}, {"w": "Waiter", "h": "restaurant"}, {"w": "Bartender", "h": "drinks"}, {"w": "Cashier", "h": "shop"}, {"w": "Librarian", "h": "quiet"}, {"w": "Veterinarian", "h": "animals"}, {"w": "Surgeon", "h": "hospital"}, {"w": "Astronaut", "h": "space"}, {"w": "Soldier", "h": "army"}, {"w": "Sailor", "h": "sea"}, {"w": "Postman", "h": "mail"}, {"w": "Taxi Driver", "h": "driving"}, {"w": "Bus Driver", "h": "driving"}, {"w": "Judge", "h": "court"}, {"w": "Politician", "h": "power"}, {"w": "Detective", "h": "mystery"}, {"w": "Pharmacist", "h": "medicine"}, {"w": "Tailor", "h": "sewing"}, {"w": "Baker", "h": "bakery"}, {"w": "Florist", "h": "flowers"}, {"w": "Coach", "h": "team"}], "Landmarks": [{"w": "Eiffel Tower", "h": "tower"}, {"w": "Statue of Liberty", "h": "statue"}, {"w": "Big Ben", "h": "tower"}, {"w": "Great Wall", "h": "ancient"}, {"w": "Taj Mahal", "h": "ancient"}, {"w": "Colosseum", "h": "ancient"}, {"w": "Pyramids of Giza", "h": "ancient"}, {"w": "Leaning Tower of Pisa", "h": "tower"}, {"w": "Christ the Redeemer", "h": "statue"}, {"w": "Sydney Opera House", "h": "modern"}, {"w": "Mount Rushmore", "h": "statue"}, {"w": "Golden Gate Bridge", "h": "bridge"}, {"w": "Stonehenge", "h": "ancient"}, {"w": "Machu Picchu", "h": "ancient"}, {"w": "Sphinx", "h": "ancient"}, {"w": "Empire State Building", "h": "tower"}, {"w": "Burj Khalifa", "h": "tower"}, {"w": "Sagrada Familia", "h": "church"}, {"w": "Notre-Dame", "h": "church"}, {"w": "Acropolis", "h": "ancient"}, {"w": "Petra", "h": "ancient"}, {"w": "Niagara Falls", "h": "waterfall"}, {"w": "Grand Canyon", "h": "nature"}, {"w": "Mount Everest", "h": "mountain"}, {"w": "Mount Fuji", "h": "mountain"}, {"w": "Times Square", "h": "city"}, {"w": "Buckingham Palace", "h": "palace"}, {"w": "Tower Bridge", "h": "bridge"}, {"w": "Brandenburg Gate", "h": "monument"}, {"w": "Tower of London", "h": "castle"}, {"w": "Hollywood Sign", "h": "sign"}, {"w": "Las Vegas Strip", "h": "city"}, {"w": "Disney Castle", "h": "castle"}, {"w": "Angkor Wat", "h": "temple"}, {"w": "Kremlin", "h": "fortress"}, {"w": "Red Square", "h": "square"}, {"w": "Chichen Itza", "h": "temple"}, {"w": "Easter Island", "h": "statue"}, {"w": "Uluru", "h": "nature"}, {"w": "Victoria Falls", "h": "waterfall"}, {"w": "Mont Saint-Michel", "h": "island"}, {"w": "Neuschwanstein", "h": "castle"}, {"w": "Trevi Fountain", "h": "fountain"}, {"w": "Vatican", "h": "church"}, {"w": "CN Tower", "h": "tower"}, {"w": "Space Needle", "h": "tower"}, {"w": "Louvre", "h": "museum"}, {"w": "Alhambra", "h": "palace"}, {"w": "Great Barrier Reef", "h": "nature"}, {"w": "Santorini", "h": "island"}], "Instruments": [{"w": "Piano", "h": "keys"}, {"w": "Guitar", "h": "strings"}, {"w": "Violin", "h": "strings"}, {"w": "Drums", "h": "percussion"}, {"w": "Flute", "h": "woodwind"}, {"w": "Trumpet", "h": "brass"}, {"w": "Saxophone", "h": "jazz"}, {"w": "Cello", "h": "strings"}, {"w": "Clarinet", "h": "woodwind"}, {"w": "Trombone", "h": "brass"}, {"w": "Harp", "h": "strings"}, {"w": "Accordion", "h": "squeeze"}, {"w": "Banjo", "h": "strings"}, {"w": "Ukulele", "h": "small"}, {"w": "Bass Guitar", "h": "strings"}, {"w": "Harmonica", "h": "pocket"}, {"w": "Tambourine", "h": "percussion"}, {"w": "Xylophone", "h": "percussion"}, {"w": "Bagpipes", "h": "scottish"}, {"w": "Organ", "h": "keys"}, {"w": "French Horn", "h": "brass"}, {"w": "Tuba", "h": "big"}, {"w": "Oboe", "h": "woodwind"}, {"w": "Bassoon", "h": "woodwind"}, {"w": "Mandolin", "h": "strings"}, {"w": "Sitar", "h": "exotic"}, {"w": "Double Bass", "h": "strings"}, {"w": "Maracas", "h": "percussion"}, {"w": "Bongos", "h": "percussion"}, {"w": "Cymbals", "h": "percussion"}, {"w": "Triangle", "h": "percussion"}, {"w": "Recorder", "h": "woodwind"}, {"w": "Synthesizer", "h": "electronic"}, {"w": "Keyboard", "h": "keys"}, {"w": "Electric Guitar", "h": "rock"}, {"w": "Cajon", "h": "percussion"}, {"w": "Glockenspiel", "h": "percussion"}, {"w": "Vibraphone", "h": "percussion"}, {"w": "Timpani", "h": "percussion"}, {"w": "Snare Drum", "h": "percussion"}, {"w": "Castanets", "h": "spanish"}, {"w": "Lute", "h": "medieval"}, {"w": "Theremin", "h": "spooky"}, {"w": "Pan Flute", "h": "woodwind"}, {"w": "Didgeridoo", "h": "australian"}, {"w": "Steel Drum", "h": "caribbean"}, {"w": "Gong", "h": "loud"}, {"w": "Lyre", "h": "ancient"}, {"w": "Kalimba", "h": "thumb"}, {"w": "Concertina", "h": "squeeze"}], "Video Games": [{"w": "Minecraft", "h": "building"}, {"w": "Tetris", "h": "retro"}, {"w": "Pac-Man", "h": "retro"}, {"w": "Super Mario", "h": "platformer"}, {"w": "The Legend of Zelda", "h": "adventure"}, {"w": "Fortnite", "h": "online"}, {"w": "Pokemon", "h": "collect"}, {"w": "Call of Duty", "h": "shooter"}, {"w": "Grand Theft Auto", "h": "crime"}, {"w": "The Sims", "h": "life"}, {"w": "Sonic", "h": "speed"}, {"w": "Donkey Kong", "h": "platformer"}, {"w": "Space Invaders", "h": "retro"}, {"w": "Street Fighter", "h": "fighting"}, {"w": "Mortal Kombat", "h": "fighting"}, {"w": "FIFA", "h": "sports"}, {"w": "Halo", "h": "shooter"}, {"w": "Doom", "h": "shooter"}, {"w": "Counter-Strike", "h": "shooter"}, {"w": "Among Us", "h": "suspicious"}, {"w": "Roblox", "h": "building"}, {"w": "Candy Crush", "h": "mobile"}, {"w": "Angry Birds", "h": "mobile"}, {"w": "Animal Crossing", "h": "cozy"}, {"w": "Stardew Valley", "h": "cozy"}, {"w": "Overwatch", "h": "heroes"}, {"w": "League of Legends", "h": "online"}, {"w": "Dota", "h": "online"}, {"w": "World of Warcraft", "h": "fantasy"}, {"w": "Skyrim", "h": "fantasy"}, {"w": "The Witcher", "h": "fantasy"}, {"w": "Cyberpunk", "h": "futuristic"}, {"w": "Red Dead", "h": "western"}, {"w": "Assassin's Creed", "h": "stealth"}, {"w": "God of War", "h": "epic"}, {"w": "Final Fantasy", "h": "fantasy"}, {"w": "Resident Evil", "h": "horror"}, {"w": "Silent Hill", "h": "horror"}, {"w": "Tomb Raider", "h": "adventure"}, {"w": "Metroid", "h": "space"}, {"w": "Kirby", "h": "cute"}, {"w": "Mega Man", "h": "platformer"}, {"w": "Crash Bandicoot", "h": "platformer"}, {"w": "Spyro", "h": "platformer"}, {"w": "Portal", "h": "puzzle"}, {"w": "Half-Life", "h": "shooter"}, {"w": "Bioshock", "h": "creepy"}, {"w": "Tony Hawk", "h": "sports"}, {"w": "Guitar Hero", "h": "music"}, {"w": "Rocket League", "h": "cars"}], "Mythical Creatures": [{"w": "Dragon", "h": "fearsome"}, {"w": "Unicorn", "h": "magic"}, {"w": "Phoenix", "h": "rebirth"}, {"w": "Mermaid", "h": "water"}, {"w": "Vampire", "h": "undead"}, {"w": "Werewolf", "h": "beast"}, {"w": "Zombie", "h": "undead"}, {"w": "Ghost", "h": "spirit"}, {"w": "Witch", "h": "spells"}, {"w": "Wizard", "h": "wise"}, {"w": "Fairy", "h": "tiny"}, {"w": "Elf", "h": "pointy"}, {"w": "Dwarf", "h": "stout"}, {"w": "Goblin", "h": "green"}, {"w": "Troll", "h": "ugly"}, {"w": "Ogre", "h": "giant"}, {"w": "Griffin", "h": "hybrid"}, {"w": "Centaur", "h": "hybrid"}, {"w": "Minotaur", "h": "maze"}, {"w": "Medusa", "h": "snakes"}, {"w": "Cyclops", "h": "eye"}, {"w": "Pegasus", "h": "flying"}, {"w": "Sphinx", "h": "riddle"}, {"w": "Kraken", "h": "sea"}, {"w": "Loch Ness Monster", "h": "lake"}, {"w": "Bigfoot", "h": "hairy"}, {"w": "Yeti", "h": "snow"}, {"w": "Genie", "h": "wish"}, {"w": "Banshee", "h": "scream"}, {"w": "Leprechaun", "h": "gold"}, {"w": "Gnome", "h": "garden"}, {"w": "Hydra", "h": "serpent"}, {"w": "Chimera", "h": "hybrid"}, {"w": "Basilisk", "h": "serpent"}, {"w": "Gargoyle", "h": "stone"}, {"w": "Mummy", "h": "wrapped"}, {"w": "Demon", "h": "evil"}, {"w": "Angel", "h": "heaven"}, {"w": "Imp", "h": "mischief"}, {"w": "Djinn", "h": "smoke"}, {"w": "Kitsune", "h": "trickster"}, {"w": "Cerberus", "h": "guard"}, {"w": "Harpy", "h": "talons"}, {"w": "Satyr", "h": "goat"}, {"w": "Nymph", "h": "nature"}, {"w": "Cupid", "h": "love"}, {"w": "Valkyrie", "h": "warrior"}, {"w": "Golem", "h": "clay"}, {"w": "Frankenstein's Monster", "h": "stitched"}, {"w": "Will-o'-the-Wisp", "h": "light"}], "Drinks": [{"w": "Coffee", "h": "hot"}, {"w": "Tea", "h": "hot"}, {"w": "Water", "h": "plain"}, {"w": "Milk", "h": "white"}, {"w": "Orange Juice", "h": "juice"}, {"w": "Lemonade", "h": "sweet"}, {"w": "Cola", "h": "fizzy"}, {"w": "Hot Chocolate", "h": "hot"}, {"w": "Smoothie", "h": "fruit"}, {"w": "Beer", "h": "pub"}, {"w": "Wine", "h": "grapes"}, {"w": "Champagne", "h": "celebration"}, {"w": "Whiskey", "h": "spirit"}, {"w": "Vodka", "h": "spirit"}, {"w": "Rum", "h": "pirate"}, {"w": "Gin", "h": "spirit"}, {"w": "Tequila", "h": "spirit"}, {"w": "Margarita", "h": "cocktail"}, {"w": "Mojito", "h": "cocktail"}, {"w": "Martini", "h": "cocktail"}, {"w": "Cocktail", "h": "mixed"}, {"w": "Milkshake", "h": "thick"}, {"w": "Iced Tea", "h": "cold"}, {"w": "Energy Drink", "h": "boost"}, {"w": "Sparkling Water", "h": "fizzy"}, {"w": "Apple Juice", "h": "juice"}, {"w": "Cappuccino", "h": "coffee"}, {"w": "Latte", "h": "coffee"}, {"w": "Espresso", "h": "coffee"}, {"w": "Mocha", "h": "coffee"}, {"w": "Matcha", "h": "green"}, {"w": "Soda", "h": "fizzy"}, {"w": "Root Beer", "h": "float"}, {"w": "Ginger Ale", "h": "fizzy"}, {"w": "Cider", "h": "apple"}, {"w": "Sangria", "h": "fruit"}, {"w": "Punch", "h": "party"}, {"w": "Cocoa", "h": "hot"}, {"w": "Frappe", "h": "blended"}, {"w": "Kombucha", "h": "fermented"}, {"w": "Coconut Water", "h": "tropical"}, {"w": "Cranberry Juice", "h": "juice"}, {"w": "Tomato Juice", "h": "savory"}, {"w": "Bubble Tea", "h": "pearls"}, {"w": "Eggnog", "h": "holiday"}, {"w": "Pina Colada", "h": "beach"}, {"w": "Bloody Mary", "h": "spicy"}, {"w": "Sake", "h": "japanese"}, {"w": "Brandy", "h": "fancy"}, {"w": "Lemon Squash", "h": "diluted"}], "Desserts": [{"w": "Ice Cream", "h": "frozen"}, {"w": "Cake", "h": "baked"}, {"w": "Cookie", "h": "baked"}, {"w": "Brownie", "h": "chocolate"}, {"w": "Cupcake", "h": "baked"}, {"w": "Doughnut", "h": "ring"}, {"w": "Cheesecake", "h": "creamy"}, {"w": "Apple Pie", "h": "fruity"}, {"w": "Pancakes", "h": "breakfast"}, {"w": "Waffle", "h": "breakfast"}, {"w": "Chocolate", "h": "sweet"}, {"w": "Pudding", "h": "creamy"}, {"w": "Jelly", "h": "wobbly"}, {"w": "Tiramisu", "h": "italian"}, {"w": "Macaron", "h": "french"}, {"w": "Croissant", "h": "french"}, {"w": "Eclair", "h": "french"}, {"w": "Muffin", "h": "baked"}, {"w": "Pie", "h": "crust"}, {"w": "Tart", "h": "pastry"}, {"w": "Trifle", "h": "layers"}, {"w": "Custard", "h": "creamy"}, {"w": "Mousse", "h": "airy"}, {"w": "Sundae", "h": "frozen"}, {"w": "Sorbet", "h": "frozen"}, {"w": "Gelato", "h": "frozen"}, {"w": "Fudge", "h": "dense"}, {"w": "Caramel", "h": "sticky"}, {"w": "Toffee", "h": "chewy"}, {"w": "Marshmallow", "h": "squishy"}, {"w": "Candy", "h": "sweet"}, {"w": "Lollipop", "h": "stick"}, {"w": "Gingerbread", "h": "spiced"}, {"w": "Shortbread", "h": "buttery"}, {"w": "Scone", "h": "british"}, {"w": "Banana Split", "h": "frozen"}, {"w": "Profiterole", "h": "french"}, {"w": "Panna Cotta", "h": "italian"}, {"w": "Baklava", "h": "nutty"}, {"w": "Churros", "h": "fried"}, {"w": "Crepe", "h": "french"}, {"w": "Flan", "h": "caramel"}, {"w": "Meringue", "h": "fluffy"}, {"w": "Strudel", "h": "apple"}, {"w": "Pavlova", "h": "cloud"}, {"w": "Fruit Salad", "h": "healthy"}, {"w": "Popsicle", "h": "icy"}, {"w": "Honey", "h": "golden"}, {"w": "Cinnamon Roll", "h": "spiral"}, {"w": "Banoffee Pie", "h": "banana"}], "Vehicles": [{"w": "Car", "h": "road"}, {"w": "Bus", "h": "passengers"}, {"w": "Truck", "h": "big"}, {"w": "Motorcycle", "h": "bike"}, {"w": "Bicycle", "h": "bike"}, {"w": "Train", "h": "rail"}, {"w": "Airplane", "h": "fly"}, {"w": "Helicopter", "h": "fly"}, {"w": "Boat", "h": "water"}, {"w": "Ship", "h": "water"}, {"w": "Submarine", "h": "underwater"}, {"w": "Rocket", "h": "space"}, {"w": "Scooter", "h": "bike"}, {"w": "Tractor", "h": "farm"}, {"w": "Van", "h": "cargo"}, {"w": "Taxi", "h": "yellow"}, {"w": "Ambulance", "h": "emergency"}, {"w": "Fire Truck", "h": "emergency"}, {"w": "Police Car", "h": "emergency"}, {"w": "Tank", "h": "military"}, {"w": "Jet", "h": "fast"}, {"w": "Yacht", "h": "luxury"}, {"w": "Canoe", "h": "paddle"}, {"w": "Kayak", "h": "paddle"}, {"w": "Sailboat", "h": "sails"}, {"w": "Ferry", "h": "water"}, {"w": "Tram", "h": "rail"}, {"w": "Subway", "h": "underground"}, {"w": "Limousine", "h": "luxury"}, {"w": "Convertible", "h": "breeze"}, {"w": "SUV", "h": "family"}, {"w": "Pickup Truck", "h": "bed"}, {"w": "Forklift", "h": "construction"}, {"w": "Bulldozer", "h": "construction"}, {"w": "Crane", "h": "construction"}, {"w": "Excavator", "h": "construction"}, {"w": "Cement Mixer", "h": "construction"}, {"w": "Skateboard", "h": "tricks"}, {"w": "Segway", "h": "balance"}, {"w": "Hot Air Balloon", "h": "float"}, {"w": "Blimp", "h": "airship"}, {"w": "Glider", "h": "fly"}, {"w": "Jet Ski", "h": "spray"}, {"w": "Hovercraft", "h": "hover"}, {"w": "Cable Car", "h": "mountain"}, {"w": "Monorail", "h": "rail"}, {"w": "Spaceship", "h": "space"}, {"w": "Snowmobile", "h": "snow"}, {"w": "Go-Kart", "h": "race"}, {"w": "Rickshaw", "h": "pull"}], "Clothing": [{"w": "T-Shirt", "h": "casual"}, {"w": "Jeans", "h": "denim"}, {"w": "Dress", "h": "feminine"}, {"w": "Skirt", "h": "bottom"}, {"w": "Jacket", "h": "outerwear"}, {"w": "Coat", "h": "warm"}, {"w": "Sweater", "h": "warm"}, {"w": "Hoodie", "h": "casual"}, {"w": "Shorts", "h": "summer"}, {"w": "Socks", "h": "feet"}, {"w": "Shoes", "h": "feet"}, {"w": "Boots", "h": "footwear"}, {"w": "Sneakers", "h": "sporty"}, {"w": "Sandals", "h": "summer"}, {"w": "Hat", "h": "head"}, {"w": "Cap", "h": "head"}, {"w": "Scarf", "h": "warm"}, {"w": "Gloves", "h": "hands"}, {"w": "Belt", "h": "waist"}, {"w": "Tie", "h": "formal"}, {"w": "Suit", "h": "formal"}, {"w": "Shirt", "h": "top"}, {"w": "Blouse", "h": "top"}, {"w": "Trousers", "h": "bottom"}, {"w": "Leggings", "h": "tight"}, {"w": "Pajamas", "h": "sleep"}, {"w": "Underwear", "h": "inner"}, {"w": "Bra", "h": "support"}, {"w": "Vest", "h": "sleeveless"}, {"w": "Cardigan", "h": "knit"}, {"w": "Blazer", "h": "formal"}, {"w": "Tuxedo", "h": "fancy"}, {"w": "Gown", "h": "elegant"}, {"w": "Robe", "h": "lounge"}, {"w": "Swimsuit", "h": "pool"}, {"w": "Bikini", "h": "beach"}, {"w": "Raincoat", "h": "waterproof"}, {"w": "Poncho", "h": "cape"}, {"w": "Mittens", "h": "warm"}, {"w": "Beanie", "h": "warm"}, {"w": "Helmet", "h": "protect"}, {"w": "Apron", "h": "cooking"}, {"w": "Overalls", "h": "work"}, {"w": "Jumpsuit", "h": "onesie"}, {"w": "Kimono", "h": "traditional"}, {"w": "Sari", "h": "traditional"}, {"w": "Kilt", "h": "scottish"}, {"w": "Slippers", "h": "comfy"}, {"w": "Heels", "h": "tall"}, {"w": "Flip-Flops", "h": "summer"}], "Household Items": [{"w": "Sofa", "h": "furniture"}, {"w": "Chair", "h": "furniture"}, {"w": "Table", "h": "furniture"}, {"w": "Bed", "h": "bedroom"}, {"w": "Lamp", "h": "light"}, {"w": "Mirror", "h": "reflection"}, {"w": "Clock", "h": "time"}, {"w": "Television", "h": "screen"}, {"w": "Refrigerator", "h": "appliance"}, {"w": "Oven", "h": "kitchen"}, {"w": "Microwave", "h": "kitchen"}, {"w": "Toaster", "h": "kitchen"}, {"w": "Kettle", "h": "kitchen"}, {"w": "Blender", "h": "kitchen"}, {"w": "Fork", "h": "cutlery"}, {"w": "Spoon", "h": "cutlery"}, {"w": "Knife", "h": "cutlery"}, {"w": "Plate", "h": "dishes"}, {"w": "Cup", "h": "dishes"}, {"w": "Bowl", "h": "dishes"}, {"w": "Pillow", "h": "soft"}, {"w": "Blanket", "h": "warm"}, {"w": "Towel", "h": "bathroom"}, {"w": "Curtain", "h": "window"}, {"w": "Rug", "h": "floor"}, {"w": "Vacuum", "h": "cleaning"}, {"w": "Broom", "h": "cleaning"}, {"w": "Mop", "h": "cleaning"}, {"w": "Bucket", "h": "cleaning"}, {"w": "Sink", "h": "wash"}, {"w": "Toilet", "h": "bathroom"}, {"w": "Shower", "h": "bathroom"}, {"w": "Bathtub", "h": "bathroom"}, {"w": "Dishwasher", "h": "appliance"}, {"w": "Washing Machine", "h": "laundry"}, {"w": "Iron", "h": "laundry"}, {"w": "Hairdryer", "h": "hair"}, {"w": "Fan", "h": "cooling"}, {"w": "Heater", "h": "warmth"}, {"w": "Candle", "h": "wax"}, {"w": "Vase", "h": "flowers"}, {"w": "Wardrobe", "h": "closet"}, {"w": "Desk", "h": "work"}, {"w": "Bookshelf", "h": "books"}, {"w": "Drawer", "h": "storage"}, {"w": "Doorbell", "h": "ring"}, {"w": "Trash Can", "h": "bin"}, {"w": "Frying Pan", "h": "kitchen"}, {"w": "Scissors", "h": "cut"}, {"w": "Remote Control", "h": "channel"}]};
+
+/* ---------- constants ---------- */
 const RANDOM = "__random__";
-const PLAYER_COUNT = 4;
+const MIN_PLAYERS = 3, MAX_PLAYERS = 10;
+const DEFAULT_NAMES = ["Kovago","Kovacs","Ben","Deep"];
+const CAT_NAMES = Object.keys(CATEGORIES || {});
 
-const state = {
-  screen: "setup",
-  players: ["", "", "", ""],
-  imposters: 1,
-  category: RANDOM,
-  // round
-  word: "", hint: "", catName: "",
-  impSet: new Set(),
-  idx: 0,
-  flipped: false,
-  // results
-  answerShown: false,
+/* ---------- persistence (safe) ---------- */
+const LS = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 };
+const SAVED = LS.get("imposter.settings", {});
 
-const app = document.getElementById("app");
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const rand = n => Math.floor(Math.random() * n);
-const sample = arr => arr[rand(arr.length)];
+/* ---------- state ---------- */
+const S = {
+  names:        Array.isArray(SAVED.names) && SAVED.names.length ? SAVED.names.slice() : DEFAULT_NAMES.slice(),
+  playerCount:  clampInt(SAVED.playerCount, MIN_PLAYERS, MAX_PLAYERS, 4),
+  imposterMode: SAVED.imposterMode === "random" ? "random" : "fixed",
+  imposterCount:clampInt(SAVED.imposterCount, 1, MAX_PLAYERS-1, 1),
+  showCategory: SAVED.showCategory !== undefined ? !!SAVED.showCategory : true,
+  hardMode:     !!SAVED.hardMode,
+  category:     (SAVED.category && (SAVED.category===RANDOM || CATEGORIES[SAVED.category])) ? SAVED.category : RANDOM,
+};
+const R = { word:"", hint:"", catName:"", roles:[], starter:0, impCount:1 };
+const F = { screen:"setup", idx:0, flipped:false, mode:"deal", answerShown:false };
+let lastWordKey = "";
 
-function pickImposters(count){
-  const idxs = [0,1,2,3];
-  for(let i=idxs.length-1;i>0;i--){const j=rand(i+1);[idxs[i],idxs[j]]=[idxs[j],idxs[i]];}
-  return new Set(idxs.slice(0,count));
+function clampInt(v,min,max,def){ v=parseInt(v,10); if(isNaN(v))return def; return Math.max(min,Math.min(max,v)); }
+function ensureNames(){
+  for(let i=S.names.length;i<S.playerCount;i++) S.names[i] = "Player "+(i+1);
 }
+function nameOf(i){ const n=(S.names[i]||"").trim(); return n || ("Player "+(i+1)); }
+function save(){
+  S.imposterCount = Math.min(S.imposterCount, S.playerCount-1);
+  LS.set("imposter.settings", S);
+}
+function rnd(n){ return Math.floor(Math.random()*n); }
 
+/* ---------- round logic ---------- */
 function startRound(){
-  state.catName = state.category===RANDOM ? sample(Object.keys(CATEGORIES)) : state.category;
-  const entry = sample(CATEGORIES[state.catName]);
-  state.word = entry.w; state.hint = entry.h;
-  state.impSet = pickImposters(state.imposters);
-  state.idx = 0; state.flipped = false;
-  state.answerShown = false;
-  state.screen = "handoff";
-  render();
+  ensureNames();
+  // pick category
+  R.catName = (S.category===RANDOM) ? CAT_NAMES[rnd(CAT_NAMES.length)] : S.category;
+  // pick word, avoid immediate repeat
+  const list = CATEGORIES[R.catName];
+  let pick;
+  for(let t=0;t<8;t++){ pick = list[rnd(list.length)]; if(R.catName+"|"+pick.w !== lastWordKey) break; }
+  lastWordKey = R.catName+"|"+pick.w;
+  R.word = pick.w; R.hint = pick.h;
+  // imposters
+  const maxRand = Math.max(1, Math.ceil(S.playerCount/3));
+  R.impCount = (S.imposterMode==="random") ? (1+rnd(maxRand)) : Math.min(S.imposterCount, S.playerCount-1);
+  // assign roles
+  R.roles = new Array(S.playerCount).fill("crew");
+  let assigned=0;
+  while(assigned<R.impCount){ const k=rnd(S.playerCount); if(R.roles[k]==="crew"){R.roles[k]="imp";assigned++;} }
+  // who starts
+  R.starter = rnd(S.playerCount);
+  // flow
+  F.idx=0; F.flipped=false; F.mode="deal"; F.answerShown=false;
+  go("reveal");
 }
 
-function playerName(i){ return state.players[i] || ("Player " + (i+1)); }
-
-/* ---------------- SETUP ---------------- */
-function renderSetup(){
-  const opts = [`<option value="${RANDOM}">Surprise me</option>`]
-    .concat(Object.keys(CATEGORIES).map(c=>`<option value="${esc(c)}"${state.category===c?" selected":""}>${esc(c)}</option>`))
-    .join("");
-
-  app.innerHTML = `
-    <header class="masthead">
-      <div class="tag">
-        <span class="eyebrow">Social deduction · pass the phone</span>
-        <span class="stamp-file">CASE&nbsp;#${String(rand(9000)+1000)}</span>
-      </div>
-      <h1>IMP<span class="o">O</span>STER</h1>
-    </header>
-
-    <div class="panel">
-      <span class="label eyebrow">The four agents</span>
-      ${[0,1,2,3].map(i=>`
-        <div class="name-row">
-          <span class="name-num">0${i+1}</span>
-          <input type="text" id="p${i}" maxlength="14" placeholder="Player ${i+1}" value="${esc(state.players[i])}" autocomplete="off">
-        </div>`).join("")}
-    </div>
-
-    <div class="panel">
-      <span class="label eyebrow">How many imposters</span>
-      <div class="seg" id="seg">
-        ${[1,2,3].map(n=>`<button data-n="${n}" aria-pressed="${state.imposters===n}">${n}<span class="sub">OF 4</span></button>`).join("")}
-      </div>
-      <p class="note" id="impNote"></p>
-    </div>
-
-    <div class="panel">
-      <label class="label eyebrow" for="cat">Category</label>
-      <select id="cat">${opts}</select>
-    </div>
-
-    <button class="btn btn-gold" id="deal">Deal the cards</button>
-    <p class="error" id="err"></p>
-    <p class="note">One phone, passed around. Each agent taps to see their secret word — imposters get only a hint and have to bluff.</p>
-  `;
-
-  const impNote = document.getElementById("impNote");
-  const setImpNote = ()=> impNote.textContent =
-    state.imposters===1 ? "Classic. One liar at the table." :
-    state.imposters===2 ? "Two liars — they don't know each other." :
-    "Three liars vs one. Chaos.";
-  setImpNote();
-
-  [0,1,2,3].forEach(i=>{
-    document.getElementById("p"+i).addEventListener("input", e=> state.players[i]=e.target.value);
-  });
-  document.getElementById("seg").querySelectorAll("button").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      state.imposters = +b.dataset.n;
-      document.getElementById("seg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x===b));
-      setImpNote();
-    });
-  });
-  document.getElementById("cat").addEventListener("change", e=> state.category=e.target.value);
-  document.getElementById("deal").addEventListener("click", ()=>{
-    document.getElementById("err").textContent = "";
-    startRound();
-  });
-}
-
-/* ---------------- HANDOFF + REVEAL CARD ---------------- */
-function renderHandoff(){
-  const i = state.idx;
-  const isImp = state.impSet.has(i);
-
-  const back = isImp ? `
-    <div class="face face-back imp">
-      <span class="role-tag">No clearance</span>
-      <div class="role-headline">You're the imposter</div>
-      <div class="cat-line">Category · ${esc(state.catName)}</div>
-      <div class="hint-block">
-        <div class="hint-label">— the word, redacted —</div>
-        <div class="redactions"><span></span><span></span><span></span></div>
-        <div class="hint-label">your only hint</div>
-        <div class="hint-text">${esc(state.hint)}</div>
-      </div>
-      <p class="role-foot">Everyone else knows the real word. Blend in, work out what it is, and don't get voted out.</p>
-    </div>` : `
-    <div class="face face-back crew">
-      <span class="role-tag">Clearance granted</span>
-      <div class="cat-line">Category · ${esc(state.catName)}</div>
-      <div class="word">${esc(state.word)}</div>
-      <p class="role-foot">This is the secret word. There ${state.imposters===1?"is 1 imposter":"are "+state.imposters+" imposters"} at the table who don't know it — flush them out.</p>
-    </div>`;
-
-  app.innerHTML = `
-    <div class="handoff-top">
-      <span class="counter">AGENT ${i+1} / ${PLAYER_COUNT}</span>
-      <div class="progress">${[0,1,2,3].map(k=>`<span class="pip ${k<i?'done':k===i?'active':''}"></span>`).join("")}</div>
-    </div>
-
-    <div class="passto">
-      <p class="eyebrow">Pass the phone to</p>
-      <div class="who">${esc(playerName(i))}</div>
-    </div>
-
-    <div class="card" id="card">
-      <div class="card-inner">
-        <div class="face face-front">
-          <span class="classified">CLASSIFIED · EYES ONLY</span>
-          <div class="seal">TAP<br>TO<br>OPEN</div>
-          <div class="lead">${esc(playerName(i))}'s card</div>
-          <div class="tap-hint">make sure nobody's peeking</div>
-        </div>
-        ${back}
-      </div>
-    </div>
-
-    <div id="afterReveal"></div>
-    <div class="spacer"></div>
-    <p class="note" style="text-align:center">${state.flipped ? "Memorise it, then hide and pass along." : "Only "+esc(playerName(i))+" should look."}</p>
-  `;
-
-  const card = document.getElementById("card");
-  const after = document.getElementById("afterReveal");
-
-  function showHideButton(){
-    const last = i === PLAYER_COUNT-1;
-    after.innerHTML = `<button class="btn ${last?'btn-gold':'btn-ghost'}" id="hide">${last?'Everyone has seen it →':'Hide & pass on →'}</button>`;
-    document.getElementById("hide").addEventListener("click", ev=>{
-      ev.stopPropagation();
-      if(last){ state.screen="discuss"; render(); }
-      else { state.idx++; state.flipped=false; render(); }
-    });
-  }
-
-  if(state.flipped){ card.classList.add("flipped"); showHideButton(); }
-
-  card.addEventListener("click", ()=>{
-    if(state.flipped) return;
-    state.flipped = true;
-    card.classList.add("flipped");
-    document.querySelector(".note").textContent = "Memorise it, then hide and pass along.";
-    showHideButton();
-  });
-}
-
-/* ---------------- RESULTS ---------------- */
-function renderDiscuss(){
-  const impNames = [...state.impSet].sort().map(playerName).join(", ");
-
-  app.innerHTML = `
-    <header class="masthead">
-      <div class="tag"><span class="eyebrow">Round in progress</span><span class="stamp-file">${esc(state.catName)}</span></div>
-    </header>
-
-    <div class="discuss-head">
-      <p class="eyebrow">Cards dealt</p>
-      <div class="display">Now find them</div>
-    </div>
-    <p class="instructions">Talk it out. Take turns dropping a word or clue tied to the secret. The imposter is bluffing — too vague or too far off gives them away. Then vote on who the imposter is.</p>
-
-    <div id="answerArea">
-      ${state.answerShown ? `
-        <div class="reveal-box">
-          <p class="eyebrow">The secret word was</p>
-          <div class="word">${esc(state.word)}</div>
-          <p class="eyebrow">Imposter${state.imposters>1?'s':''}</p>
-          <div class="imps">${esc(impNames)}</div>
-        </div>` : `<button class="btn btn-ghost" id="revealBtn">Reveal the answer</button>`}
-    </div>
-
-    <div class="spacer"></div>
-    <div class="btn-row">
-      <button class="btn btn-gold" id="next">Next round</button>
-      <button class="btn btn-ghost" id="newgame">New game</button>
-    </div>
-  `;
-
-  if(!state.answerShown){
-    document.getElementById("revealBtn").addEventListener("click", ()=>{ state.answerShown=true; render(); });
-  }
-  document.getElementById("next").addEventListener("click", startRound);
-  document.getElementById("newgame").addEventListener("click", ()=>{ state.screen="setup"; render(); });
-}
-
-/* ---------------- ROUTER ---------------- */
+/* ---------- router ---------- */
+function go(screen){ F.screen=screen; render(); }
 function render(){
-  window.scrollTo(0,0);
-  if(state.screen==="setup") renderSetup();
-  else if(state.screen==="handoff") renderHandoff();
-  else renderDiscuss();
+  const app=document.getElementById("app");
+  app.innerHTML="";
+  let el;
+  if(F.screen==="setup") el=renderSetup();
+  else if(F.screen==="settings") el=renderSettings();
+  else if(F.screen==="reveal") el=renderReveal();
+  else if(F.screen==="started") el=renderStarted();
+  app.appendChild(el);
 }
 
+/* ---------- SETUP ---------- */
+function renderSetup(){
+  ensureNames();
+  const s=document.createElement("div"); s.className="screen stack";
+
+  const head=document.createElement("div");
+  head.innerHTML='<div class="brand">Pass &amp; play</div><div class="title">IMPOSTER<span class="dot">.</span></div>';
+  s.appendChild(head);
+
+  const gap=document.createElement("div"); gap.style.height="6px"; s.appendChild(gap);
+
+  // players stepper
+  const pc=document.createElement("div");
+  const lab=document.createElement("label"); lab.className="fld"; lab.textContent="Players"; pc.appendChild(lab);
+  const step=document.createElement("div"); step.className="stepper";
+  const minus=document.createElement("button"); minus.className="round-btn"; minus.textContent="–"; minus.disabled=S.playerCount<=MIN_PLAYERS;
+  const val=document.createElement("div"); val.className="val"; val.textContent=S.playerCount;
+  const plus=document.createElement("button"); plus.className="round-btn"; plus.textContent="+"; plus.disabled=S.playerCount>=MAX_PLAYERS;
+  minus.onclick=()=>{ if(S.playerCount>MIN_PLAYERS){S.playerCount--;save();render();} };
+  plus.onclick =()=>{ if(S.playerCount<MAX_PLAYERS){S.playerCount++;ensureNames();save();render();} };
+  step.appendChild(minus); step.appendChild(val); step.appendChild(plus);
+  pc.appendChild(step); s.appendChild(pc);
+
+  // names
+  const nm=document.createElement("div");
+  const nlab=document.createElement("label"); nlab.className="fld"; nlab.textContent="Names"; nm.appendChild(nlab);
+  const names=document.createElement("div"); names.className="names";
+  for(let i=0;i<S.playerCount;i++){
+    const row=document.createElement("div"); row.className="name-row";
+    const idx=document.createElement("div"); idx.className="idx"; idx.textContent=(i+1);
+    const inp=document.createElement("input"); inp.className="name"; inp.type="text"; inp.value=S.names[i]||"";
+    inp.placeholder="Player "+(i+1); inp.maxLength=14;
+    inp.oninput=(e)=>{ S.names[i]=e.target.value; };
+    inp.onblur=()=>{ save(); };
+    row.appendChild(idx); row.appendChild(inp); names.appendChild(row);
+  }
+  nm.appendChild(names); s.appendChild(nm);
+
+  // category
+  const cc=document.createElement("div");
+  const clab=document.createElement("label"); clab.className="fld"; clab.textContent="Category"; cc.appendChild(clab);
+  const sel=document.createElement("select"); sel.className="sel";
+  const opt0=document.createElement("option"); opt0.value=RANDOM; opt0.textContent="🎲  Surprise me"; sel.appendChild(opt0);
+  CAT_NAMES.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=c; sel.appendChild(o); });
+  sel.value=S.category;
+  sel.onchange=(e)=>{ S.category=e.target.value; save(); };
+  cc.appendChild(sel); s.appendChild(cc);
+
+  s.appendChild(document.createElement("div")).className="grow";
+
+  const btns=document.createElement("div"); btns.className="btn-row";
+  const setBtn=document.createElement("button"); setBtn.className="btn btn-ghost"; setBtn.textContent="Settings"; setBtn.onclick=()=>go("settings");
+  const startBtn=document.createElement("button"); startBtn.className="btn btn-primary"; startBtn.textContent="Start"; startBtn.onclick=startRound;
+  btns.appendChild(setBtn); btns.appendChild(startBtn);
+  s.appendChild(btns);
+  return s;
+}
+
+/* ---------- SETTINGS ---------- */
+function renderSettings(){
+  const s=document.createElement("div"); s.className="screen stack";
+  const head=document.createElement("div"); head.innerHTML='<div class="brand">Game</div><div class="title" style="font-size:clamp(32px,10vw,44px)">Settings</div>';
+  s.appendChild(head);
+  const gap=document.createElement("div"); gap.style.height="6px"; s.appendChild(gap);
+
+  const panel=document.createElement("div"); panel.className="panel";
+
+  // imposters mode
+  const imp=document.createElement("div"); imp.className="setting";
+  const impTop=document.createElement("div"); impTop.className="row";
+  impTop.innerHTML='<div><div class="lbl">Imposters</div><div class="hint">Fixed count, or a hidden random number each round.</div></div>';
+  const seg=document.createElement("div"); seg.className="seg"; seg.style.flex="none"; seg.style.width="170px";
+  const bFix=document.createElement("button"); bFix.textContent="Fixed"; bFix.className=S.imposterMode==="fixed"?"on":"";
+  const bRnd=document.createElement("button"); bRnd.textContent="Random"; bRnd.className=S.imposterMode==="random"?"on":"";
+  bFix.onclick=()=>{ S.imposterMode="fixed"; save(); render(); };
+  bRnd.onclick=()=>{ S.imposterMode="random"; save(); render(); };
+  seg.appendChild(bFix); seg.appendChild(bRnd);
+  impTop.appendChild(seg); imp.appendChild(impTop);
+
+  if(S.imposterMode==="fixed"){
+    const cnt=document.createElement("div"); cnt.style.marginTop="12px";
+    const step=document.createElement("div"); step.className="stepper";
+    const maxImp=S.playerCount-1;
+    S.imposterCount=Math.min(S.imposterCount,maxImp);
+    const m=document.createElement("button"); m.className="round-btn"; m.textContent="–"; m.disabled=S.imposterCount<=1;
+    const v=document.createElement("div"); v.className="val"; v.textContent=S.imposterCount;
+    const p=document.createElement("button"); p.className="round-btn"; p.textContent="+"; p.disabled=S.imposterCount>=maxImp;
+    m.onclick=()=>{ if(S.imposterCount>1){S.imposterCount--;save();render();} };
+    p.onclick=()=>{ if(S.imposterCount<maxImp){S.imposterCount++;save();render();} };
+    step.appendChild(m); step.appendChild(v); step.appendChild(p);
+    cnt.appendChild(step); imp.appendChild(cnt);
+  }
+  panel.appendChild(imp);
+
+  // show category
+  panel.appendChild(toggleSetting(
+    "Show category","Display the category to everyone on the reveal.",
+    S.showCategory,(v)=>{S.showCategory=v;save();render();}, "Shown","Hidden"
+  ));
+
+  // clue difficulty
+  panel.appendChild(toggleSetting(
+    "Clue difficulty","Hard = the imposter gets no hint word at all.",
+    S.hardMode,(v)=>{S.hardMode=v;save();render();}, "Hard","Normal", true
+  ));
+
+  s.appendChild(panel);
+  s.appendChild(document.createElement("div")).className="grow";
+
+  const done=document.createElement("button"); done.className="btn btn-primary"; done.textContent="Done"; done.onclick=()=>go("setup");
+  s.appendChild(done);
+  return s;
+}
+function toggleSetting(title,hint,val,onChange,onLabel,offLabel,onIsRight){
+  const wrap=document.createElement("div"); wrap.className="setting";
+  const row=document.createElement("div"); row.className="row";
+  row.innerHTML='<div><div class="lbl">'+title+'</div><div class="hint">'+hint+'</div></div>';
+  const seg=document.createElement("div"); seg.className="seg"; seg.style.flex="none"; seg.style.width="170px";
+  // left = off, right = on
+  const left=document.createElement("button"); left.textContent=offLabel; left.className=!val?"on":"";
+  const right=document.createElement("button"); right.textContent=onLabel; right.className=val?"on":"";
+  left.onclick=()=>onChange(false);
+  right.onclick=()=>onChange(true);
+  seg.appendChild(left); seg.appendChild(right);
+  row.appendChild(seg); wrap.appendChild(row);
+  return wrap;
+}
+
+/* ---------- REVEAL ---------- */
+function renderReveal(){
+  const i=F.idx;
+  const role=R.roles[i];
+  const isImp=role==="imp";
+  const s=document.createElement("div"); s.className="screen reveal";
+
+  // small top spacer (category now lives on the card, next to the word)
+  const top=document.createElement("div"); top.className="reveal-top"; top.style.height="16px";
+  s.appendChild(top);
+
+  // card
+  const wrap=document.createElement("div"); wrap.className="card-wrap";
+  const card=document.createElement("div"); card.className="card"+(F.flipped?" flipped":"");
+
+  const front=document.createElement("div"); front.className="face face-front";
+  front.innerHTML='<div class="who">Pass to</div><div class="pname">'+escapeHtml(nameOf(i))+'</div><div class="tap-pill">TAP TO REVEAL</div>';
+
+  const catHtml = S.showCategory ? '<div class="card-cat">'+escapeHtml(R.catName)+'</div>' : '';
+  const back=document.createElement("div"); back.className="face face-back"+(isImp?" imp":"");
+  if(isImp){
+    let h=catHtml+'<div class="imp-tag">IMPOSTER</div>';
+    if(!S.hardMode){ h+='<div class="clue"><div class="clue-k">Clue</div><div class="clue-v">'+escapeHtml(R.hint)+'</div></div>'; }
+    back.innerHTML=h;
+  }else{
+    back.innerHTML=catHtml+'<div class="word">'+escapeHtml(R.word)+'</div>';
+  }
+  card.appendChild(front); card.appendChild(back);
+
+  card.onclick=()=>{ if(!F.flipped){ F.flipped=true; render(); } };
+  wrap.appendChild(card); s.appendChild(wrap);
+
+  // bottom button
+  const pad=document.createElement("div"); pad.style.height="14px"; s.appendChild(pad);
+  const btn=document.createElement("button"); btn.className="btn btn-primary";
+  if(!F.flipped){
+    btn.className="btn btn-ghost"; btn.textContent=(F.mode==="peek")?"Cancel":"Skip";
+    btn.onclick=()=>{ if(F.mode==="peek"){ go("started"); } else { advance(); } };
+  }else{
+    if(F.mode==="peek"){ btn.textContent="Hide & go back"; btn.onclick=()=>go("started"); }
+    else if(i>=S.playerCount-1){ btn.textContent="Hide & start"; btn.onclick=()=>go("started"); }
+    else { btn.textContent="Hide & pass"; btn.onclick=advance; }
+  }
+  s.appendChild(btn);
+  return s;
+}
+function advance(){ F.idx++; F.flipped=false; if(F.idx>=S.playerCount){ go("started"); } else { render(); } }
+
+/* ---------- STARTED ---------- */
+function renderStarted(){
+  const s=document.createElement("div"); s.className="screen stack";
+
+  const sb=document.createElement("div"); sb.className="starter-box";
+  sb.innerHTML='<div class="starter-k">Starts the round</div><div class="starter-v">'+escapeHtml(nameOf(R.starter))+'</div>';
+  s.appendChild(sb);
+
+  const hint=document.createElement("div"); hint.className="sub"; hint.style.marginTop="0";
+  hint.textContent="Forgot yours? Tap your name to peek.";
+  s.appendChild(hint);
+
+  const roster=document.createElement("div"); roster.className="roster";
+  for(let i=0;i<S.playerCount;i++){
+    const chip=document.createElement("button"); chip.className="chip"; chip.textContent=nameOf(i);
+    chip.onclick=()=>{ F.mode="peek"; F.idx=i; F.flipped=false; go("reveal"); };
+    roster.appendChild(chip);
+  }
+  s.appendChild(roster);
+
+  s.appendChild(document.createElement("div")).className="grow";
+
+  if(F.answerShown){
+    const box=document.createElement("div"); box.className="answer-box";
+    const impNames=R.roles.map((r,i)=>r==="imp"?nameOf(i):null).filter(Boolean);
+    box.innerHTML='<div class="ak">'+escapeHtml(R.catName)+'</div><div class="aw">'+escapeHtml(R.word)+'</div>'+
+      '<div class="imps">'+(impNames.length>1?"Imposters: ":"Imposter: ")+impNames.map(escapeHtml).join(", ")+'</div>';
+    s.appendChild(box);
+    const pad=document.createElement("div"); pad.style.height="12px"; s.appendChild(pad);
+  }else{
+    const rev=document.createElement("button"); rev.className="btn btn-ghost"; rev.textContent="Reveal answer";
+    rev.onclick=()=>{ F.answerShown=true; render(); };
+    s.appendChild(rev);
+    const pad=document.createElement("div"); pad.style.height="10px"; s.appendChild(pad);
+  }
+
+  const btns=document.createElement("div"); btns.className="btn-row";
+  const ng=document.createElement("button"); ng.className="btn btn-ghost"; ng.textContent="New game"; ng.onclick=()=>go("setup");
+  const nr=document.createElement("button"); nr.className="btn btn-primary"; nr.textContent="Next round"; nr.onclick=startRound;
+  btns.appendChild(ng); btns.appendChild(nr);
+  s.appendChild(btns);
+  return s;
+}
+
+/* ---------- util ---------- */
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+/* ---------- boot ---------- */
+ensureNames();
 render();
 </script>
 </body>
